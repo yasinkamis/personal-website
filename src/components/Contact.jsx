@@ -24,7 +24,7 @@ const Contact = () => {
             onClick={() =>
               window.open("https://www.linkedin.com/in/yasinkamis", "_blank")
             }
-            className="bg-tertiary py-3 px-8 rounded-xl outline-none w-fit text-white font-bold shadow-md shadow-primary"
+            className="bg-tertiary py-3 px-8 rounded-xl outline-none w-full text-white font-bold shadow-md shadow-primary"
           >
             Linkedin
           </button>
@@ -33,7 +33,7 @@ const Contact = () => {
             onClick={() =>
               window.open("https://github.com/yasinkamis", "_blank")
             }
-            className="bg-tertiary py-3 px-8 rounded-xl outline-none w-fit text-white font-bold shadow-md shadow-primary"
+            className="bg-tertiary py-3 px-8 rounded-xl outline-none w-full text-white font-bold shadow-md shadow-primary"
           >
             Github
           </button>
@@ -43,7 +43,7 @@ const Contact = () => {
               (window.location.href =
                 "mailto:yasin-kamis90@outlook.com?subject=&body=")
             }
-            className="bg-tertiary py-3 px-8 rounded-xl outline-none w-fit text-white font-bold shadow-md shadow-primary"
+            className="bg-tertiary py-3 px-8 rounded-xl outline-none w-full text-white font-bold shadow-md shadow-primary"
           >
             Mail
           </button>
