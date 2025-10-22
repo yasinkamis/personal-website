@@ -1,204 +1,537 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
-  scroll-behavior: smooth;
+}
+
+:root {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
   color-scheme: dark;
+  color: #F9FAFB;
+  background-color: #0A0A0F;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.hash-span {
-  margin-top: -100px;
-  padding-bottom: 100px;
-  display: block;
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
-.black-gradient {
-  background: #000000; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to right,
-    #434343,
-    #000000
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to right,
-    #434343,
-    #000000
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-}
-
-.violet-gradient {
-  background: #804dee;
-  background: linear-gradient(-90deg, #804dee 0%, rgba(60, 51, 80, 0) 100%);
-  background: -webkit-linear-gradient(
-    -90deg,
-    #804dee 0%,
-    rgba(60, 51, 80, 0) 100%
-  );
-}
-
-.green-pink-gradient {
-  background: "#00cea8";
-  background: linear-gradient(90.13deg, #00cea8 1.9%, #bf61ff 97.5%);
-  background: -webkit-linear-gradient(-90.13deg, #00cea8 1.9%, #bf61ff 97.5%);
-}
-
-.orange-text-gradient {
-  background: #f12711; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to top,
-    #f12711,
-    #f5af19
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to top,
-    #f12711,
-    #f5af19
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.green-text-gradient {
-  background: #11998e; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to top,
-    #11998e,
-    #38ef7d
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to top,
-    #11998e,
-    #38ef7d
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.blue-text-gradient {
-  /* background: -webkit-linear-gradient(#eee, #333); */
-  background: #56ccf2; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to top,
-    #2f80ed,
-    #56ccf2
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to top,
-    #2f80ed,
-    #56ccf2
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.pink-text-gradient {
-  background: #ec008c; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to top,
-    #ec008c,
-    #fc6767
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to top,
-    #ec008c,
-    #fc6767
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* canvas- styles */
-.canvas-loader {
-  font-size: 10px;
-  width: 1em;
-  height: 1em;
-  border-radius: 50%;
+body {
   position: relative;
-  text-indent: -9999em;
-  animation: mulShdSpin 1.1s infinite ease;
-  transform: translateZ(0);
+  background: #0A0A0F;
 }
 
-@keyframes mulShdSpin {
-  0%,
-  100% {
-    box-shadow: 0em -2.6em 0em 0em #ffffff,
-      1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
-      2.5em 0em 0 0em rgba(255, 255, 255, 0.2),
-      1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
-      0em 2.5em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
-      -2.6em 0em 0 0em rgba(255, 255, 255, 0.5),
-      -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.7);
-  }
-  12.5% {
-    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.7),
-      1.8em -1.8em 0 0em #ffffff, 2.5em 0em 0 0em rgba(255, 255, 255, 0.2),
-      1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
-      0em 2.5em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
-      -2.6em 0em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.5);
-  }
-  25% {
-    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.5),
-      1.8em -1.8em 0 0em rgba(255, 255, 255, 0.7), 2.5em 0em 0 0em #ffffff,
-      1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
-      0em 2.5em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
-      -2.6em 0em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
-  }
-  37.5% {
-    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2),
-      1.8em -1.8em 0 0em rgba(255, 255, 255, 0.5),
-      2.5em 0em 0 0em rgba(255, 255, 255, 0.7), 1.75em 1.75em 0 0em #ffffff,
-      0em 2.5em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
-      -2.6em 0em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
+/* Özel scrollbar (sadece gerekli yerlerde) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(19, 19, 26, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(147, 51, 234, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(147, 51, 234, 0.8);
+}
+
+/* Selection rengi */
+::selection {
+  background-color: rgba(147, 51, 234, 0.4);
+  color: #F9FAFB;
+}
+
+/* Link stilleri */
+a {
+  font-weight: 500;
+  color: #9333EA;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #C084FC;
+}
+
+/* Buton stilleri */
+button {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #9333EA;
+  outline-offset: 2px;
+}
+
+/* Glow animasyonu */
+@keyframes glow {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(147, 51, 234, 0.5),
+                 0 0 20px rgba(147, 51, 234, 0.3),
+                 0 0 30px rgba(147, 51, 234, 0.2);
   }
   50% {
-    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2),
-      1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
-      2.5em 0em 0 0em rgba(255, 255, 255, 0.5),
-      1.75em 1.75em 0 0em rgba(255, 255, 255, 0.7), 0em 2.5em 0 0em #ffffff,
-      -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
-      -2.6em 0em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
+    text-shadow: 0 0 20px rgba(147, 51, 234, 0.8),
+                 0 0 30px rgba(147, 51, 234, 0.5),
+                 0 0 40px rgba(147, 51, 234, 0.3);
   }
-  62.5% {
-    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2),
-      1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
-      2.5em 0em 0 0em rgba(255, 255, 255, 0.2),
-      1.75em 1.75em 0 0em rgba(255, 255, 255, 0.5),
-      0em 2.5em 0 0em rgba(255, 255, 255, 0.7), -1.8em 1.8em 0 0em #ffffff,
-      -2.6em 0em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
+}
+
+/* Pulse animasyonu */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
   }
-  75% {
-    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2),
-      1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
-      2.5em 0em 0 0em rgba(255, 255, 255, 0.2),
-      1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
-      0em 2.5em 0 0em rgba(255, 255, 255, 0.5),
-      -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.7), -2.6em 0em 0 0em #ffffff,
-      -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
   }
-  87.5% {
-    box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2),
-      1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
-      2.5em 0em 0 0em rgba(255, 255, 255, 0.2),
-      1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
-      0em 2.5em 0 0em rgba(255, 255, 255, 0.2),
-      -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.5),
-      -2.6em 0em 0 0em rgba(255, 255, 255, 0.7), -1.8em -1.8em 0 0em #ffffff;
+}
+
+/* Float animasyonu */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* Rotate animasyonu */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Starfield animasyonu */
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* Utility classes */
+.glow-text {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Smooth transitions */
+.smooth-transition {
+  transition: all 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ============================================ */
+/* RESPONSIVE STYLES */
+/* ============================================ */
+
+/* Tablet ve altı (768px) */
+@media (max-width: 768px) {
+  /* Genel padding ayarları */
+  body {
+    padding: 0 !important;
+  }
+
+  /* Section container'lar için */
+  .section-container {
+    padding: 2rem 1rem !important;
+    min-height: 100vh !important;
+    max-height: 100vh !important;
+    overflow-y: auto !important;
+  }
+
+  /* Overview responsive */
+  .overview-greeting {
+    font-size: 0.875rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .overview-name {
+    font-size: 2rem !important;
+    line-height: 1.1 !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .overview-title {
+    font-size: 1.25rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .overview-description {
+    font-size: 0.875rem !important;
+    padding: 0 0.5rem;
+    margin-bottom: 2rem !important;
+    line-height: 1.5 !important;
+  }
+
+  .overview-stat-value {
+    font-size: 2rem !important;
+  }
+
+  .overview-stat-label {
+    font-size: 0.7rem !important;
+  }
+
+  .overview-stats {
+    gap: 2rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* Work Experience responsive */
+  .work-experience-main-title {
+    font-size: 2rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .work-experience-container {
+    flex-direction: column !important;
+    height: auto !important;
+    max-height: 60vh !important;
+    gap: 1rem !important;
+  }
+
+  .work-experience-tabs {
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    min-width: 100% !important;
+    margin-bottom: 0.5rem !important;
+    gap: 0.25rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+
+  .work-experience-tab {
+    min-width: 120px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.875rem !important;
+    border-left: none !important;
+    border-bottom: 3px solid !important;
+  }
+
+  .work-experience-details {
+    max-height: 45vh !important;
+    padding: 1rem !important;
+  }
+
+  .work-title {
+    font-size: 1.25rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .work-company {
+    font-size: 1rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .work-duration {
+    font-size: 0.875rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .work-description {
+    font-size: 0.875rem !important;
+    margin-bottom: 1rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .work-section-title {
+    font-size: 1rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Education responsive */
+  .education-title {
+    font-size: 2rem !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .education-card {
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .education-school {
+    font-size: 1.25rem !important;
+  }
+
+  .education-degree {
+    font-size: 0.875rem !important;
+  }
+
+  .education-info {
+    font-size: 0.75rem !important;
+  }
+
+  .education-description {
+    font-size: 0.875rem !important;
+    line-height: 1.4 !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* Testimonials responsive */
+  .testimonial-title {
+    font-size: 2rem !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .testimonial-card {
+    padding: 1.5rem 1rem !important;
+    min-height: auto !important;
+  }
+
+  .testimonial-text {
+    font-size: 0.875rem !important;
+    line-height: 1.4 !important;
+    margin: 1rem 0 !important;
+  }
+
+  .testimonial-author {
+    font-size: 1rem !important;
+  }
+
+  .testimonial-position {
+    font-size: 0.875rem !important;
+  }
+
+  /* Contact responsive */
+  .contact-title {
+    font-size: 2rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .contact-subtitle {
+    font-size: 0.875rem !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .contact-card {
+    padding: 1.25rem !important;
+  }
+
+  .contact-cta-button {
+    padding: 0.875rem 1.75rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  .contact-footer {
+    margin-top: 2rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* Gradient orbs smaller on mobile */
+  .gradient-orb {
+    width: 200px !important;
+    height: 200px !important;
+  }
+}
+
+/* Mobile (480px ve altı) */
+@media (max-width: 480px) {
+  /* Daha da kompakt tasarım */
+  .section-container {
+    padding: 1.5rem 0.75rem !important;
+  }
+
+  .overview-greeting {
+    font-size: 0.75rem !important;
+  }
+
+  .overview-name {
+    font-size: 1.75rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .overview-title {
+    font-size: 1rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .overview-description {
+    font-size: 0.813rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .overview-stat-value {
+    font-size: 1.75rem !important;
+  }
+
+  .overview-stat-label {
+    font-size: 0.65rem !important;
+  }
+
+  .overview-stats {
+    gap: 1.5rem !important;
+  }
+
+  /* Work Experience minimal */
+  .work-experience-main-title {
+    font-size: 1.75rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .work-experience-container {
+    max-height: 55vh !important;
+  }
+
+  .work-experience-tab {
+    min-width: 100px !important;
+    padding: 0.625rem 0.75rem !important;
+    font-size: 0.813rem !important;
+  }
+
+  .work-experience-details {
+    max-height: 40vh !important;
+    padding: 0.75rem !important;
+  }
+
+  .work-title {
+    font-size: 1.125rem !important;
+  }
+
+  .work-company {
+    font-size: 0.938rem !important;
+  }
+
+  .work-duration {
+    font-size: 0.813rem !important;
+  }
+
+  .work-description {
+    font-size: 0.813rem !important;
+    line-height: 1.3 !important;
+  }
+
+  /* Education minimal */
+  .education-title,
+  .testimonial-title,
+  .contact-title {
+    font-size: 1.75rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .education-card {
+    padding: 0.875rem !important;
+  }
+
+  .education-school {
+    font-size: 1.125rem !important;
+  }
+
+  .education-degree {
+    font-size: 0.813rem !important;
+  }
+
+  .education-description {
+    font-size: 0.813rem !important;
+  }
+
+  /* Testimonials minimal */
+  .testimonial-card {
+    padding: 1.25rem 0.875rem !important;
+  }
+
+  .testimonial-text {
+    font-size: 0.813rem !important;
+  }
+
+  .testimonial-author {
+    font-size: 0.938rem !important;
+  }
+
+  /* Contact minimal */
+  .contact-subtitle {
+    font-size: 0.813rem !important;
+  }
+
+  .contact-card {
+    padding: 1rem !important;
+  }
+
+  .contact-cta-button {
+    padding: 0.75rem 1.5rem !important;
+    font-size: 0.813rem !important;
+  }
+
+  .contact-footer {
+    margin-top: 1.5rem !important;
+  }
+
+  /* Gradient orbs daha da küçük */
+  .gradient-orb {
+    width: 120px !important;
+    height: 120px !important;
+  }
+
+  /* Hide section names on mobile, keep only dots */
+  .navigation-label {
+    display: none !important;
+  }
+
+  .navigation-container {
+    right: 0.5rem !important;
+    gap: 1.25rem !important;
+  }
+}
+
+/* Navigation responsive styles */
+@media (max-width: 768px) {
+  .navigation-container {
+    right: 1rem !important;
+    gap: 1.5rem !important;
+  }
+
+  .navigation-dot {
+    width: 10px !important;
+    height: 10px !important;
+  }
+
+  .navigation-dot.active {
+    width: 10px !important;
+    height: 10px !important;
   }
 }

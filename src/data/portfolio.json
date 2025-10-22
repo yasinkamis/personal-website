@@ -1,0 +1,204 @@
+{
+  "personal": {
+    "name": "Yasin Kamis",
+    "title": "Frontend Developer",
+    "bio": "I have more than four years of software development experience. I embarked on this journey starting with Python, followed by C++,C#, and JavaScript, and later developed an interest in Adobe Design Programs. This led me to enter the field of Frontend Development, where software and design converge. Producing high-quality content is of great importance to me. I am still eagerly developing myself in this field and learning the latest technologies.",
+    "avatar": "/assets/avatar.jpg",
+    "location": "Turkey",
+    "skills": [
+      "React",
+      "Node.js",
+      "Python",
+      "JavaScript",
+      "MongoDB",
+      "PostgreSQL",
+      "Docker",
+      "AWS",
+      "TypeScript",
+      "GraphQL"
+    ]
+  },
+  "overview": {
+    "greeting": "Hello, I'm",
+    "description": "I have more than four years of software development experience. I embarked on this journey starting with Python, followed by C++,C#, and JavaScript, and later developed an interest in Adobe Design Programs. This led me to enter the field of Frontend Development, where software and design converge. Producing high-quality content is of great importance to me. I am still eagerly developing myself in this field and learning the latest technologies.",
+    "yearsOfExperience": 4,
+    "projectsCompleted": 20
+  },
+  "workExperience": [
+    {
+      "id": 1,
+      "company": "32bit",
+      "position": "Frontend Developer",
+      "duration": "Jan 2023 – Present",
+      "location": "Remote",
+      "description": "As a team leader, I support professional projects in web development and UI design.\n • Fişçek: An AI-integrated accounting application. Users can upload receipts, and AI processes them to extract expense details. The system allows expense requests to be created and managed through approval stages.\n • BAM (Business Automation Manager): A business automation platform containing 30+ React projects. It manages business processes and follows strict coding standards with shared UI components in a theme library.\n • BAM includes Hub, a social media platform where users can create communities, share posts and announcements, and interact through likes and comments.\n • Defined project direction and standards.\n • Led the development process from start to finish.\n • Provided mentorship to the team and guided interns.\n • Vakko Web Kasa: Contributed to screen designs and project development for POS applications used in Vakko stores.",
+      "technologies": [
+        "React",
+        "Javascript",
+        "styled-components",
+        "MUI",
+        "Java",
+        "JSON",
+        "REST",
+        "Git",
+        "Figma",
+        "Typescript",
+        "Photoshop",
+        "Eslint",
+        "Jenkins",
+        "Docker",
+        "Jira",
+        "Bamoe"
+      ],
+      "achievements": [
+        "Led end-to-end development and defined project standards for multiple professional web and UI projects.",
+        "Supported and mentored the frontend team, including guiding interns and ensuring adherence to best practices.",
+        "Developed AI-integrated accounting application (Fişçek) and POS screens for Vakko Web Kasa",
+        "Managed and contributed to BAM platform, including 30+ React projects and the Hub social media module with shared UI components and strict coding standards."
+      ]
+    },
+    {
+      "id": 2,
+      "company": "Sakarya University",
+      "position": "Student Assistant – Frontend Developer",
+      "duration": "Sep 2022 – Jan 2023",
+      "location": "Sakarya",
+      "description": "Worked on web projects used by students and faculty at the university.",
+      "technologies": [
+        "Next.js",
+        "React",
+        "Javascript",
+        "styled-components",
+        "JSON",
+        "REST",
+        "Eslint",
+        "Git"
+      ],
+      "achievements": [
+        "Developed and maintained web applications used by students and faculty at the university."
+      ]
+    },
+    {
+      "id": 3,
+      "company": "90Pixel",
+      "position": "Frontend Developer",
+      "duration": "Feb 2022 – Sep 2022",
+      "location": "Remote",
+      "description": "I participated in various projects and worked in an environment where the team continuously improved itself. We researched and learned new technologies while providing training to each other. We followed strict coding standards in software development. I also gained experience in client relations, actively participating in analysis and presentation processes.\n •Tipstory: A micro-learning platform that allows knowledge sharing in a social media-style interface.\n • TİSAŞ (Trabzon Silah Sanayi A.Ş.): A firearm sales website developed with a dynamic frontend (CMS). Users could manage content via the admin panel.\n • Aragez: A map-based restaurant discovery application; I worked on the admin panel.\n • Turkish Islamic Encyclopedia: Developed an admin panel for content editing and categorization.\n • TUA (Turkish Space Agency): Reviewed and supported the CMS system improvements.",
+      "technologies": [
+        "Next.js",
+        "React",
+        "Javascript",
+        "styled-components",
+        "GraphQL",
+        "Node.js",
+        "JSON",
+        "REST",
+        "Git",
+        "Eslint",
+        "Figma",
+        "Typescript",
+        "Ant Design"
+      ],
+      "achievements": [
+        "Contributed to multiple frontend projects while fostering a culture of continuous learning and team-led training.",
+        "Gained hands-on experience in client communication, analysis, and presentation processes.",
+        "Ensured high-quality software through adherence to strict coding standards and modern development practices.",
+        "Developed and maintained dynamic frontend systems for diverse clients, including TİSAŞ, TUA, and the Turkish Islamic Encyclopedia."
+      ]
+    },
+    {
+      "id": 4,
+      "company": "JobSwire",
+      "position": "Frontend Developer",
+      "duration": "Jul 2021 – Jun 2022",
+      "location": "Remote",
+      "description": "As a startup, we developed an application that helps people find jobs more easily. Users could complete surveys to receive the best job matches and share their results. I worked as a React developer and team lead. Defined project standards and managed the project’s progress. Maintained the structure of the frontend team and managed the workflow. Participated in interviews for new frontend developers, prepared case studies, and played an active role in team selection.",
+      "technologies": [
+        "React",
+        "Javascript",
+        "SCSS",
+        "Webpack",
+        "Node.js",
+        "Bootstrap",
+        "JQuery",
+        "Eslint",
+        "JSON",
+        "REST",
+        "Git",
+        "Figma"
+      ],
+      "achievements": [
+        "Led the frontend team and defined React development standards for a scalable job-matching platform.",
+        "Managed project workflow and delivery, ensuring timely progress and high code quality.",
+        "Conducted interviews and prepared case studies to build a strong frontend team."
+      ]
+    }
+  ],
+  "testimonials": [
+    {
+      "id": 1,
+      "name": "Erhan Akyel",
+      "position": "Frontend Developer",
+      "company": "90Pixel",
+      "text": "Yasin ile çeşitli projelerde bir araya geldik. Yasin, sorunlara yaratıcı ve hızlı çözümler üretme yeteneği ile dikkat çeken biri. Ayrıca son derece disiplinli ve planlı bir çalışma tarzına sahip. Onunla çalışmak güven verici ve keyifli bir deneyimdi. Yasin'in üzerinde çalışıp çözemeyeceği bir problem olmadığına inanıyorum."
+    },
+    {
+      "id": 2,
+      "name": "Ceren Aktaş",
+      "position": "Backend Developer",
+      "company": "90Pixel",
+      "text": "Yasin sorumluluk sahibi ve iyi iletişim becerilerine sahip bir takım arkadaşı. İşimize verdiği değeri her zaman gösterir ve kendini geliştirmek için sürekli çaba sarf eder. Onunla çalışmak gerçekten keyifliydi."
+    },
+    {
+      "id": 3,
+      "name": "Aydoğan Sarı",
+      "position": "Frontend Developer",
+      "company": "90Pixel",
+      "text": "Yasin ile birçok projede beraber çalıştık. Her zaman güvenebileceğim bir takım arkadaşı oldu. İletişimi kuvvetli, öğrenmeye açık ve problemlere karşı hızlı çözümler üretebilecek yetkinliğe sahip."
+    },
+    {
+      "id": 4,
+      "name": "Sercan Gündoğan",
+      "position": "Fullstack Developer",
+      "company": "JobSwire",
+      "text": "Yasin ile beraber yaklaşık 6 aydır aynı proje üzerinde çalışıyoruz. Kendisi Frontend Development anlamında oldukça yetkin ve bilgili. Ayni zamanda yeni teknojileri öğrenmek, onları kullanmak konusunda fazlasıyla hevesli, öğrenmeye açık. Takım içi iletişimde de kendisi ile hiçbir problem yaşamadık. Yasin ile çalışılmasını kesinlikle tavsiye ederim."
+    },
+    {
+      "id": 5,
+      "name": "Sena Gümüşer",
+      "position": "Founder",
+      "company": "JobSwire",
+      "text": "Uzun süredir Yasin Kamış ile birlikte çalışmaktayız. Kendisinin disiplinli oluşu, işleri pratik ve hızlı bir şekilde halletmesi ve her probleme 'bunu çözebilirim' şeklinde yaklaşması bizler için sahip olduğu en önemli özelliklerdendir. Aynı zamanda Frontend ekibimizin yönetimini üstlenerek projenin planlı ve düzenli bir şekilde ilerlemesine katkılar sağlamıştır. Sürekli sorgulayan ve araştıran kimliğiyle öğrenmeyi seven heyecanı ekip olarak bizleri de heyecanlandırmaktadır. Bu sebeple Yasin Kamış ile çalışılmasını kesinlikte tavsiye ederim."
+    }
+  ],
+  "education": [
+    {
+      "id": 1,
+      "school": "Sakarya University",
+      "degree": "Bachelor's Degree in Computer Systems Engineering",
+      "duration": "2020 – 2024",
+      "location": "Sakarya, Turkey",
+      "description": "Graduated with a strong foundation in software development, algorithms, and system design.",
+      "gpa": "2.58/4.0",
+      "courses": [
+        "Data Structures & Algorithms",
+        "Web Development",
+        "Database Systems",
+        "Software Engineering",
+        "Operating Systems",
+        "Computer Networks"
+      ]
+    }
+  ],
+  "contact": {
+    "email": "yasin-kamis90@outlook.com",
+    "location": "Turkey",
+    "social": {
+      "github": "https://github.com/yasinkamis",
+      "linkedin": "https://linkedin.com/in/yasinkamis"
+    },
+    "availability": "Open to relocation.",
+    "responseTime": "Usually responds within 24 hours"
+  }
+}
