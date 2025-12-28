@@ -96,6 +96,102 @@ export const translations = {
     fortune8: 'Deleted code is debugged code.',
     fortune9: 'The best code is no code at all.',
     fortune10: 'Programming is like writing a book... except if you miss a single comma, the whole thing makes no sense.',
+
+    // UI Elements
+    processing: 'Processing...',
+    ready: 'Ready',
+    skillsLabel: 'skills',
+    jobsLabel: 'jobs',
+    testimonialsLabel: 'testimonials',
+
+    // Help sections
+    availableCommands: 'Available Commands',
+    funCommands: 'Fun Commands',
+    adminCommands: 'Admin Commands',
+
+    // About
+    yearsExperience: 'Years Experience',
+    projects: 'Projects',
+
+    // Contact labels
+    locationLabel: 'Location',
+    availabilityLabel: 'Availability',
+    responseTimeLabel: 'Response Time',
+    contactTip: 'Use "message --name <name> --email <email> --subject <subject> --body <message>" to send me a message!',
+
+    // Testimonials
+    whatPeopleSay: 'What People Say',
+
+    // Message command
+    missingArguments: 'Missing required arguments!',
+    usageMessage: 'Usage: message --name "Name" --email "Email" --subject "Subject" --body "Message"',
+    exampleMessage: 'Example: message --name "John Doe" --email "john@example.com" --subject "Hello" --body "I loved your portfolio!"',
+    invalidEmail: 'Invalid email address!',
+    from: 'From',
+    subject: 'Subject',
+
+    // Messages (admin)
+    messageMarkedRead: 'Message marked as read.',
+    messageDeleted: 'Message deleted.',
+    inbox: 'Inbox',
+
+    // Stats
+    siteStatistics: 'Site Statistics',
+    visitors: 'Visitors',
+    totalVisitors: 'Total Visitors',
+    today: 'Today',
+    messagesLabel: 'Messages',
+    totalMessages: 'Total Messages',
+    unread: 'Unread',
+    lastMessage: 'Last message',
+    noMessagesYet: 'No messages yet',
+    commandsLabel: 'Commands',
+    totalCommands: 'Total Commands',
+    mostUsed: 'Most Used:',
+    content: 'Content',
+    skillsCount: 'Skills',
+    jobsCount: 'Jobs',
+    testimonialsCount: 'Testimonials',
+    educationCount: 'Education',
+
+    // Fun commands
+    followWhiteRabbit: 'Follow the white rabbit...',
+    mooHireMe: 'Moo! Hire Yasin!',
+    coffeeFunFact: 'Fun fact: This portfolio was made with approximately 47 cups of coffee.',
+    sudoTip: 'But if you want real admin access, try "su" command!',
+    rmReadOnly: 'Nice try! But files here are read-only.',
+
+    // Su/Exit
+    enterCredentials: 'Enter root credentials',
+    suUsage: 'Usage: su --user <email> --pass <password>',
+    notLoggedIn: 'Not logged in.',
+
+    // Curl
+    clickToViewProfile: 'Click here to view profile',
+
+    // Cat - readme.txt
+    readmeContent: `
+╔══════════════════════════════════════════════════════════════╗
+║                    WELCOME TO MY PORTFOLIO                     ║
+║                                                                ║
+║  This is a terminal-based portfolio website.                  ║
+║  Feel free to explore using the available commands.           ║
+║                                                                ║
+║  Type 'help' to see all available commands.                   ║
+║  Type 'about' to learn more about me.                         ║
+║  Type 'contact' to get my contact information.                ║
+║                                                                ║
+║  Have fun exploring! 🚀                                       ║
+╚══════════════════════════════════════════════════════════════╝
+`,
+    secretContent: '🤫 Shhh... The secret is: There is no secret. Just hard work and coffee!',
+    todoContent: `
+[x] Build an awesome portfolio
+[x] Learn React
+[x] Master TypeScript
+[ ] Take over the world (after coffee)
+[ ] Sleep (eventually)
+`,
   },
   tr: {
     // Terminal
@@ -194,6 +290,102 @@ export const translations = {
     fortune8: 'Silinen kod, debug edilmiş koddur.',
     fortune9: 'En iyi kod, hiç yazılmamış koddur.',
     fortune10: 'Programlama kitap yazmak gibidir... tek farkı bir virgülü kaçırırsanız, hiçbir şey anlam ifade etmez.',
+
+    // UI Elements
+    processing: 'İşleniyor...',
+    ready: 'Hazır',
+    skillsLabel: 'beceri',
+    jobsLabel: 'iş',
+    testimonialsLabel: 'referans',
+
+    // Help sections
+    availableCommands: 'Kullanılabilir Komutlar',
+    funCommands: 'Eğlenceli Komutlar',
+    adminCommands: 'Admin Komutları',
+
+    // About
+    yearsExperience: 'Yıl Deneyim',
+    projects: 'Proje',
+
+    // Contact labels
+    locationLabel: 'Konum',
+    availabilityLabel: 'Uygunluk',
+    responseTimeLabel: 'Yanıt Süresi',
+    contactTip: '"message --name <isim> --email <email> --subject <konu> --body <mesaj>" komutuyla bana mesaj gönderebilirsin!',
+
+    // Testimonials
+    whatPeopleSay: 'İnsanlar Ne Diyor',
+
+    // Message command
+    missingArguments: 'Gerekli argümanlar eksik!',
+    usageMessage: 'Kullanım: message --name "İsim" --email "Email" --subject "Konu" --body "Mesaj"',
+    exampleMessage: 'Örnek: message --name "Ali Veli" --email "ali@example.com" --subject "Merhaba" --body "Portfolyonuzu çok beğendim!"',
+    invalidEmail: 'Geçersiz e-posta adresi!',
+    from: 'Gönderen',
+    subject: 'Konu',
+
+    // Messages (admin)
+    messageMarkedRead: 'Mesaj okundu olarak işaretlendi.',
+    messageDeleted: 'Mesaj silindi.',
+    inbox: 'Gelen Kutusu',
+
+    // Stats
+    siteStatistics: 'Site İstatistikleri',
+    visitors: 'Ziyaretçiler',
+    totalVisitors: 'Toplam Ziyaretçi',
+    today: 'Bugün',
+    messagesLabel: 'Mesajlar',
+    totalMessages: 'Toplam Mesaj',
+    unread: 'Okunmamış',
+    lastMessage: 'Son mesaj',
+    noMessagesYet: 'Henüz mesaj yok',
+    commandsLabel: 'Komutlar',
+    totalCommands: 'Toplam Komut',
+    mostUsed: 'En Çok Kullanılan:',
+    content: 'İçerik',
+    skillsCount: 'Beceri',
+    jobsCount: 'İş',
+    testimonialsCount: 'Referans',
+    educationCount: 'Eğitim',
+
+    // Fun commands
+    followWhiteRabbit: 'Beyaz tavşanı takip et...',
+    mooHireMe: 'Möö! Yasin\'i işe al!',
+    coffeeFunFact: 'İlginç bilgi: Bu portfolyo yaklaşık 47 fincan kahve ile yapıldı.',
+    sudoTip: 'Ama gerçek admin erişimi istiyorsan, "su" komutunu dene!',
+    rmReadOnly: 'Güzel deneme! Ama buradaki dosyalar salt okunur.',
+
+    // Su/Exit
+    enterCredentials: 'Root bilgilerini girin',
+    suUsage: 'Kullanım: su --user <email> --pass <şifre>',
+    notLoggedIn: 'Giriş yapılmamış.',
+
+    // Curl
+    clickToViewProfile: 'Profili görüntülemek için tıklayın',
+
+    // Cat - readme.txt
+    readmeContent: `
+╔══════════════════════════════════════════════════════════════╗
+║                   PORTFOLYOMA HOŞ GELDİNİZ                     ║
+║                                                                ║
+║  Bu terminal tabanlı bir portfolyo web sitesidir.             ║
+║  Mevcut komutları kullanarak keşfetmekten çekinmeyin.         ║
+║                                                                ║
+║  Tüm komutları görmek için 'help' yazın.                      ║
+║  Hakkımda bilgi almak için 'about' yazın.                     ║
+║  İletişim bilgilerim için 'contact' yazın.                    ║
+║                                                                ║
+║  İyi keşifler! 🚀                                             ║
+╚══════════════════════════════════════════════════════════════╝
+`,
+    secretContent: '🤫 Şşşt... Sır şu: Sır yok. Sadece çok çalışma ve kahve!',
+    todoContent: `
+[x] Harika bir portfolyo yapmak
+[x] React öğrenmek
+[x] TypeScript'te ustalaşmak
+[ ] Dünyayı fethetmek (kahveden sonra)
+[ ] Uyumak (sonunda)
+`,
   },
 };
 

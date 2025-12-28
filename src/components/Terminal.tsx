@@ -324,10 +324,10 @@ const Terminal: React.FC = () => {
 
       <div className="terminal-footer">
         <span className="footer-info">
-          {isProcessing ? '⏳ Processing...' : '✓ Ready'}
+          {isProcessing ? `⏳ ${t('processing')}` : `✓ ${t('ready')}`}
         </span>
         <span className="footer-stats">
-          {data?.personal.skills.length || 0} skills | {data?.workExperience.length || 0} jobs | {data?.testimonials.length || 0} testimonials
+          {data?.personal.skills.length || 0} {t('skillsLabel')} | {data?.workExperience.length || 0} {t('jobsLabel')} | {data?.testimonials.length || 0} {t('testimonialsLabel')}
         </span>
       </div>
     </div>

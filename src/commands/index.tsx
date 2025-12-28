@@ -94,7 +94,7 @@ export const commands: Record<string, Command> = {
         output: (
           <div className="help-output">
             <div className="help-section">
-              <span className="section-title">📋 {ctx.language === 'en' ? 'Available Commands' : 'Kullanılabilir Komutlar'}</span>
+              <span className="section-title">📋 {ctx.t('availableCommands')}</span>
               <div className="commands-grid">
                 {regularCommands.map(({ cmd, desc }) => (
                   <div key={cmd} className="command-item">
@@ -105,7 +105,7 @@ export const commands: Record<string, Command> = {
               </div>
             </div>
             <div className="help-section">
-              <span className="section-title">🎮 {ctx.language === 'en' ? 'Fun Commands' : 'Eğlenceli Komutlar'}</span>
+              <span className="section-title">🎮 {ctx.t('funCommands')}</span>
               <div className="commands-grid">
                 {funCommands.map(({ cmd, desc }) => (
                   <div key={cmd} className="command-item">
@@ -117,7 +117,7 @@ export const commands: Record<string, Command> = {
             </div>
             {isAdmin && (
               <div className="help-section admin-section">
-                <span className="section-title">🔐 {ctx.language === 'en' ? 'Admin Commands' : 'Admin Komutları'}</span>
+                <span className="section-title">🔐 {ctx.t('adminCommands')}</span>
                 <div className="commands-grid">
                   {adminCommands.map(({ cmd, desc }) => (
                     <div key={cmd} className="command-item">
@@ -151,8 +151,8 @@ export const commands: Record<string, Command> = {
                 <p className="title">{personal.title}</p>
                 <p className="location">📍 {personal.location}</p>
                 <div className="stats">
-                  <span>💼 {overview.yearsOfExperience}+ {ctx.language === 'en' ? 'Years Experience' : 'Yıl Deneyim'}</span>
-                  <span>🚀 {overview.projectsCompleted}+ {ctx.language === 'en' ? 'Projects' : 'Proje'}</span>
+                  <span>💼 {overview.yearsOfExperience}+ {ctx.t('yearsExperience')}</span>
+                  <span>🚀 {overview.projectsCompleted}+ {ctx.t('projects')}</span>
                 </div>
               </div>
             </div>
@@ -279,7 +279,7 @@ export const commands: Record<string, Command> = {
               </div>
               <div className="contact-item">
                 <span className="contact-icon">📍</span>
-                <span className="contact-label">Location:</span>
+                <span className="contact-label">{ctx.t('locationLabel')}:</span>
                 <span className="contact-value">{contact.location}</span>
               </div>
               <div className="contact-item">
@@ -294,19 +294,17 @@ export const commands: Record<string, Command> = {
               </div>
               <div className="contact-item">
                 <span className="contact-icon">✈️</span>
-                <span className="contact-label">Availability:</span>
+                <span className="contact-label">{ctx.t('availabilityLabel')}:</span>
                 <span className="contact-value">{contact.availability}</span>
               </div>
               <div className="contact-item">
                 <span className="contact-icon">⏰</span>
-                <span className="contact-label">Response Time:</span>
+                <span className="contact-label">{ctx.t('responseTimeLabel')}:</span>
                 <span className="contact-value">{contact.responseTime}</span>
               </div>
             </div>
             <p className="contact-tip">
-              💡 {ctx.language === 'en'
-                ? 'Use "message --name <name> --email <email> --subject <subject> --body <message>" to send me a message!'
-                : '"message --name <isim> --email <email> --subject <konu> --body <mesaj>" komutuyla bana mesaj gönderebilirsin!'}
+              💡 {ctx.t('contactTip')}
             </p>
           </div>
         ),
@@ -324,7 +322,7 @@ export const commands: Record<string, Command> = {
       return {
         output: (
           <div className="testimonials-output">
-            <h3>💬 {ctx.language === 'en' ? 'What People Say' : 'İnsanlar Ne Diyor'}</h3>
+            <h3>💬 {ctx.t('whatPeopleSay')}</h3>
             {testimonials.map((test, index) => (
               <div key={test.id} className="testimonial-item">
                 <p className="testimonial-text">"{test.text}"</p>
@@ -378,11 +376,9 @@ export const commands: Record<string, Command> = {
       return {
         output: (
           <div className="su-prompt">
-            <p>🔐 {ctx.language === 'en' ? 'Enter root credentials' : 'Root bilgilerini girin'}</p>
+            <p>🔐 {ctx.t('enterCredentials')}</p>
             <p className="su-hint">
-              {ctx.language === 'en'
-                ? 'Usage: su --user <email> --pass <password>'
-                : 'Kullanım: su --user <email> --pass <şifre>'}
+              {ctx.t('suUsage')}
             </p>
           </div>
         ),
@@ -396,7 +392,7 @@ export const commands: Record<string, Command> = {
     description: 'exitDesc',
     execute: (_args, ctx) => {
       if (!ctx.isAuthenticated) {
-        return { output: ctx.language === 'en' ? 'Not logged in.' : 'Giriş yapılmamış.', isError: true };
+        return { output: ctx.t('notLoggedIn'), isError: true };
       }
       ctx.setIsAuthenticated(false);
       return { output: ctx.t('logoutSuccess') };
@@ -454,7 +450,7 @@ export const commands: Record<string, Command> = {
     description: 'cowsayDesc',
     usage: 'cowsay <message>',
     execute: (args, ctx) => {
-      const message = args.join(' ') || (ctx.language === 'en' ? 'Moo! Hire Yasin!' : 'Möö! Yasin\'i işe al!');
+      const message = args.join(' ') || ctx.t('mooHireMe');
       return {
         output: <pre className="cowsay-output">{cowAscii(message)}</pre>,
       };
@@ -504,7 +500,7 @@ export const commands: Record<string, Command> = {
                 </div>
               ))}
             </div>
-            <p className="matrix-follow">{ctx.language === 'en' ? 'Follow the white rabbit...' : 'Beyaz tavşanı takip et...'}</p>
+            <p className="matrix-follow">{ctx.t('followWhiteRabbit')}</p>
           </div>
         ),
       };
@@ -569,23 +565,8 @@ export const commands: Record<string, Command> = {
     execute: (args, ctx) => {
       const file = args[0];
       const files: Record<string, string> = {
-        'readme.txt': `
-╔══════════════════════════════════════════════════════════════╗
-║                    WELCOME TO MY PORTFOLIO                     ║
-║                                                                ║
-║  This is a terminal-based portfolio website.                  ║
-║  Feel free to explore using the available commands.           ║
-║                                                                ║
-║  Type 'help' to see all available commands.                   ║
-║  Type 'about' to learn more about me.                         ║
-║  Type 'contact' to get my contact information.                ║
-║                                                                ║
-║  Have fun exploring! 🚀                                       ║
-╚══════════════════════════════════════════════════════════════╝
-`,
-        'secret.txt': ctx.language === 'en'
-          ? '🤫 Shhh... The secret is: There is no secret. Just hard work and coffee!'
-          : '🤫 Şşşt... Sır şu: Sır yok. Sadece çok çalışma ve kahve!',
+        'readme.txt': ctx.t('readmeContent'),
+        'secret.txt': ctx.t('secretContent'),
         '.bashrc': `
 # ~/.bashrc
 export PS1="\\u@portfolio:\\w\\$ "
@@ -595,14 +576,7 @@ alias please='sudo'
 
 # The best code is the one you don't have to write
 `,
-        'todo.txt': `
-[ ] Get hired by an awesome company ⭐
-[x] Build an awesome portfolio
-[x] Learn React
-[x] Master TypeScript
-[ ] Take over the world (after coffee)
-[ ] Sleep (eventually)
-`,
+        'todo.txt': ctx.t('todoContent'),
       };
 
       if (!file) {
@@ -729,7 +703,7 @@ alias please='sudo'
               <p className="curl-url">GET {contact.social.github}</p>
               <p className="curl-success">✓ 200 OK</p>
               <a href={contact.social.github} target="_blank" rel="noopener noreferrer">
-                {ctx.language === 'en' ? 'Click here to view profile' : 'Profili görüntülemek için tıklayın'}
+                {ctx.t('clickToViewProfile')}
               </a>
             </div>
           ),
@@ -744,7 +718,7 @@ alias please='sudo'
               <p className="curl-url">GET {contact.social.linkedin}</p>
               <p className="curl-success">✓ 200 OK</p>
               <a href={contact.social.linkedin} target="_blank" rel="noopener noreferrer">
-                {ctx.language === 'en' ? 'Click here to view profile' : 'Profili görüntülemek için tıklayın'}
+                {ctx.t('clickToViewProfile')}
               </a>
             </div>
           ),
@@ -789,9 +763,7 @@ alias please='sudo'
             <pre className="coffee-ascii">{coffeeAscii}</pre>
             <p>{ctx.t('coffeeBrewComplete')} ☕</p>
             <p className="coffee-tip">
-              {ctx.language === 'en'
-                ? 'Fun fact: This portfolio was made with approximately 47 cups of coffee.'
-                : 'İlginç bilgi: Bu portfolyo yaklaşık 47 fincan kahve ile yapıldı.'}
+              {ctx.t('coffeeFunFact')}
             </p>
           </div>
         ),
@@ -819,9 +791,7 @@ alias please='sudo'
           <div className="sudo-output">
             <p>{ctx.t('sudoJoke')}</p>
             <p className="sudo-tip">
-              {ctx.language === 'en'
-                ? 'But if you want real admin access, try "su" command!'
-                : 'Ama gerçek admin erişimi istiyorsan, "su" komutunu dene!'}
+              {ctx.t('sudoTip')}
             </p>
           </div>
         ),
@@ -849,9 +819,7 @@ alias please='sudo'
         };
       }
       return {
-        output: ctx.language === 'en'
-          ? 'Nice try! But files here are read-only.'
-          : 'Güzel deneme! Ama buradaki dosyalar salt okunur.',
+        output: ctx.t('rmReadOnly'),
         isError: true,
       };
     },
@@ -874,9 +842,9 @@ alias please='sudo'
         return {
           output: (
             <div className="message-usage">
-              <p className="error">Missing required arguments!</p>
-              <p>Usage: message --name "Name" --email "Email" --subject "Subject" --body "Message"</p>
-              <p className="example">Example: message --name "John Doe" --email "john@example.com" --subject "Hello" --body "I loved your portfolio!"</p>
+              <p className="error">{ctx.t('missingArguments')}</p>
+              <p>{ctx.t('usageMessage')}</p>
+              <p className="example">{ctx.t('exampleMessage')}</p>
             </div>
           ),
           isError: true,
@@ -892,7 +860,7 @@ alias please='sudo'
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         return {
-          output: ctx.language === 'en' ? 'Invalid email address!' : 'Geçersiz e-posta adresi!',
+          output: ctx.t('invalidEmail'),
           isError: true,
         };
       }
@@ -905,8 +873,8 @@ alias please='sudo'
               <div className="message-success">
                 <p>✅ {ctx.t('messageSuccess')}</p>
                 <div className="message-details">
-                  <p><strong>From:</strong> {name} ({email})</p>
-                  <p><strong>Subject:</strong> {subject}</p>
+                  <p><strong>{ctx.t('from')}:</strong> {name} ({email})</p>
+                  <p><strong>{ctx.t('subject')}:</strong> {subject}</p>
                 </div>
               </div>
             ),
@@ -938,18 +906,18 @@ alias please='sudo'
         // Check for subcommands
         if (args[0] === 'read' && args[1]) {
           await markMessageAsRead(args[1]);
-          return { output: ctx.language === 'en' ? 'Message marked as read.' : 'Mesaj okundu olarak işaretlendi.' };
+          return { output: ctx.t('messageMarkedRead') };
         }
 
         if (args[0] === 'delete' && args[1]) {
           await deleteMessage(args[1]);
-          return { output: ctx.language === 'en' ? 'Message deleted.' : 'Mesaj silindi.' };
+          return { output: ctx.t('messageDeleted') };
         }
 
         return {
           output: (
             <div className="messages-output">
-              <h3>📬 {ctx.language === 'en' ? 'Inbox' : 'Gelen Kutusu'} ({messages.length})</h3>
+              <h3>📬 {ctx.t('inbox')} ({messages.length})</h3>
               {messages.map((msg, index) => (
                 <div key={msg.id} className={`message-item ${msg.read ? 'read' : 'unread'}`}>
                   <div className="message-header">
@@ -989,55 +957,55 @@ alias please='sudo'
         const stats = await getStats();
         const lastMsgDate = stats.lastMessageDate
           ? new Date(stats.lastMessageDate).toLocaleString()
-          : (ctx.language === 'en' ? 'No messages yet' : 'Henüz mesaj yok');
+          : ctx.t('noMessagesYet');
 
         return {
           output: (
             <div className="stats-output">
-              <h3>📊 {ctx.language === 'en' ? 'Site Statistics' : 'Site İstatistikleri'}</h3>
+              <h3>📊 {ctx.t('siteStatistics')}</h3>
 
               <div className="stats-section">
-                <h4>👥 {ctx.language === 'en' ? 'Visitors' : 'Ziyaretçiler'}</h4>
+                <h4>👥 {ctx.t('visitors')}</h4>
                 <div className="stats-grid">
                   <div className="stat-item">
                     <span className="stat-value">{stats.totalVisitors}</span>
-                    <span className="stat-label">{ctx.language === 'en' ? 'Total Visitors' : 'Toplam Ziyaretçi'}</span>
+                    <span className="stat-label">{ctx.t('totalVisitors')}</span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-value">{stats.todayVisitors}</span>
-                    <span className="stat-label">{ctx.language === 'en' ? 'Today' : 'Bugün'}</span>
+                    <span className="stat-label">{ctx.t('today')}</span>
                   </div>
                 </div>
               </div>
 
               <div className="stats-section">
-                <h4>💬 {ctx.language === 'en' ? 'Messages' : 'Mesajlar'}</h4>
+                <h4>💬 {ctx.t('messagesLabel')}</h4>
                 <div className="stats-grid">
                   <div className="stat-item">
                     <span className="stat-value">{stats.totalMessages}</span>
-                    <span className="stat-label">{ctx.language === 'en' ? 'Total Messages' : 'Toplam Mesaj'}</span>
+                    <span className="stat-label">{ctx.t('totalMessages')}</span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-value highlight">{stats.unreadMessages}</span>
-                    <span className="stat-label">{ctx.language === 'en' ? 'Unread' : 'Okunmamış'}</span>
+                    <span className="stat-label">{ctx.t('unread')}</span>
                   </div>
                 </div>
                 <p className="stats-info">
-                  📅 {ctx.language === 'en' ? 'Last message' : 'Son mesaj'}: {lastMsgDate}
+                  📅 {ctx.t('lastMessage')}: {lastMsgDate}
                 </p>
               </div>
 
               <div className="stats-section">
-                <h4>⌨️ {ctx.language === 'en' ? 'Commands' : 'Komutlar'}</h4>
+                <h4>⌨️ {ctx.t('commandsLabel')}</h4>
                 <div className="stats-grid">
                   <div className="stat-item">
                     <span className="stat-value">{stats.totalCommands}</span>
-                    <span className="stat-label">{ctx.language === 'en' ? 'Total Commands' : 'Toplam Komut'}</span>
+                    <span className="stat-label">{ctx.t('totalCommands')}</span>
                   </div>
                 </div>
                 {stats.popularCommands.length > 0 && (
                   <div className="popular-commands">
-                    <p className="stats-subtitle">{ctx.language === 'en' ? 'Most Used:' : 'En Çok Kullanılan:'}</p>
+                    <p className="stats-subtitle">{ctx.t('mostUsed')}</p>
                     {stats.popularCommands.map((cmd, i) => (
                       <div key={cmd.command} className="popular-item">
                         <span className="rank">#{i + 1}</span>
@@ -1050,23 +1018,23 @@ alias please='sudo'
               </div>
 
               <div className="stats-section">
-                <h4>📁 {ctx.language === 'en' ? 'Content' : 'İçerik'}</h4>
+                <h4>📁 {ctx.t('content')}</h4>
                 <div className="stats-grid">
                   <div className="stat-item">
                     <span className="stat-value">{ctx.data?.personal.skills.length || 0}</span>
-                    <span className="stat-label">{ctx.language === 'en' ? 'Skills' : 'Beceri'}</span>
+                    <span className="stat-label">{ctx.t('skillsCount')}</span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-value">{ctx.data?.workExperience.length || 0}</span>
-                    <span className="stat-label">{ctx.language === 'en' ? 'Jobs' : 'İş'}</span>
+                    <span className="stat-label">{ctx.t('jobsCount')}</span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-value">{ctx.data?.testimonials.length || 0}</span>
-                    <span className="stat-label">{ctx.language === 'en' ? 'Testimonials' : 'Referans'}</span>
+                    <span className="stat-label">{ctx.t('testimonialsCount')}</span>
                   </div>
                   <div className="stat-item">
                     <span className="stat-value">{ctx.data?.education.length || 0}</span>
-                    <span className="stat-label">{ctx.language === 'en' ? 'Education' : 'Eğitim'}</span>
+                    <span className="stat-label">{ctx.t('educationCount')}</span>
                   </div>
                 </div>
               </div>
