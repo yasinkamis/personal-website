@@ -13,6 +13,7 @@
   flex-direction: column;
   font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
   overflow: hidden;
+  overflow-x: hidden;
 }
 
 /* Terminal Header */
@@ -89,9 +90,11 @@
 .terminal-body {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 16px;
   background: #0d1117;
   scroll-behavior: smooth;
+  max-width: 100%;
 }
 
 .terminal-body::-webkit-scrollbar {
@@ -118,11 +121,13 @@
 
 .command-line {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
   gap: 8px;
   color: #c9d1d9;
   font-size: 14px;
   line-height: 1.6;
+  word-break: break-word;
 }
 
 .command-text {
@@ -135,6 +140,8 @@
   color: #8b949e;
   font-size: 14px;
   line-height: 1.6;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .output-content.error {
@@ -194,7 +201,7 @@
   outline: none;
   color: #f0f6fc;
   font-family: inherit;
-  font-size: 14px;
+  font-size: 16px; /* 16px prevents iOS auto-zoom on focus */
   caret-color: #58a6ff;
 }
 
@@ -361,6 +368,8 @@
   background: #161b22;
   border-radius: 8px;
   border-left: 3px solid #58a6ff;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Skills Output */
@@ -1126,6 +1135,11 @@
     max-height: none;
     border-radius: 0;
     margin: 0;
+    max-width: 100vw;
+  }
+
+  .terminal-body {
+    padding: 12px;
   }
 
   .commands-grid {
@@ -1140,6 +1154,7 @@
 
   .about-info .stats {
     justify-content: center;
+    flex-wrap: wrap;
   }
 
   .neofetch-output {
@@ -1154,6 +1169,26 @@
 
   .exp-meta {
     flex-wrap: wrap;
+  }
+
+  .prompt {
+    white-space: normal;
+    flex-wrap: wrap;
+  }
+
+  .input-line {
+    flex-wrap: wrap;
+  }
+
+  .welcome-ascii {
+    font-size: 8px;
+    overflow-x: auto;
+  }
+
+  .ascii-avatar,
+  .neofetch-ascii {
+    font-size: 8px;
+    overflow-x: auto;
   }
 }
 

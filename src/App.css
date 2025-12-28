@@ -40,6 +40,13 @@ body {
   color: var(--text-primary);
   min-height: 100vh;
   overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Global text overflow handling */
+* {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* App container */
