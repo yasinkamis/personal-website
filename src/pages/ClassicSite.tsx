@@ -200,7 +200,7 @@ export default function ClassicSite() {
             <span className="cs-logo-bracket">/&gt;</span>
           </a>
 
-          <ul className={`cs-nav-links ${menuOpen ? 'cs-nav-links-open' : ''}`}>
+          <ul className="cs-nav-links cs-nav-links-desktop">
             {NAV_LINKS.map(link => (
               <li key={link.href}>
                 <a
@@ -237,6 +237,21 @@ export default function ClassicSite() {
           </button>
         </div>
       </nav>
+
+      {/* ── MOBILE MENU OVERLAY (outside nav to avoid backdrop-filter containing block bug) ── */}
+      <ul className={`cs-nav-links cs-nav-links-mobile ${menuOpen ? 'cs-nav-links-open' : ''}`}>
+        {NAV_LINKS.map(link => (
+          <li key={link.href}>
+            <a
+              href={link.href}
+              className={`cs-nav-link ${activeSection === link.href.slice(1) ? 'cs-nav-link-active' : ''}`}
+              onClick={e => { e.preventDefault(); scrollTo(link.href); }}
+            >
+              {t(link.label, link.labelTr)}
+            </a>
+          </li>
+        ))}
+      </ul>
 
       {/* ── HERO ── */}
       <section id="hero" className="cs-hero">
