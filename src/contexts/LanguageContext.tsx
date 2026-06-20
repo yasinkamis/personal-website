@@ -21,13 +21,9 @@ export const useLanguage = () => {
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguage] = useState<Language>(() => {
-    // Check browser language or localStorage
     const savedLang = localStorage.getItem('language') as Language;
-    if (savedLang && (savedLang === 'en' || savedLang === 'tr')) {
-      return savedLang;
-    }
-    const browserLang = navigator.language.split('-')[0];
-    return browserLang === 'tr' ? 'tr' : 'en';
+    if (savedLang === 'en' || savedLang === 'tr') return savedLang;
+    return 'en';
   });
 
   const handleSetLanguage = useCallback((lang: Language) => {

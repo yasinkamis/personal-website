@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useData } from '../contexts/DataContext';
@@ -282,6 +283,15 @@ const Terminal: React.FC = () => {
           }}>
             {language.toUpperCase()}
           </span>
+          <Link
+            to="/classic"
+            className="mode-switch-btn"
+            onClick={(e) => e.stopPropagation()}
+            title={language === 'tr' ? 'Klasik Moda Geç' : 'Switch to Classic Mode'}
+          >
+            <span className="mode-switch-icon">⊞</span>
+            {language === 'tr' ? 'Klasik' : 'Classic'}
+          </Link>
         </div>
       </div>
 

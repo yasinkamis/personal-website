@@ -10,25 +10,25 @@ const SKILL_CATS: { label: string; labelTr: string; skills: string[]; color: str
     label: 'Frontend',
     labelTr: 'Frontend',
     color: 'blue',
-    skills: ['React', 'Next.js', 'Vite.js', 'JavaScript', 'TypeScript', 'styled-components', 'MUI', 'Ant Design', 'Tailwind', 'Bootstrap', 'SCSS'],
+    skills: ['React', 'Next.js', 'Vite.js', 'JavaScript', 'TypeScript', 'Redux', 'Zustand', 'React Query', 'styled-components', 'MUI', 'Ant Design', 'Tailwind', 'Bootstrap', 'SCSS', 'CSS3', 'HTML5', 'Framer Motion'],
   },
   {
     label: 'Backend & API',
     labelTr: 'Backend & API',
     color: 'green',
-    skills: ['Node.js', 'GraphQL', 'REST'],
+    skills: ['Java', 'Spring Boot', 'Spring MVC', 'Node.js', 'GraphQL', 'REST'],
   },
   {
     label: 'DevOps & Tools',
     labelTr: 'DevOps & Araçlar',
     color: 'orange',
-    skills: ['Docker', 'Jenkins', 'Git', 'Webpack', 'Eslint', 'Jira'],
+    skills: ['Docker', 'Jenkins', 'Git', 'Webpack', 'Vite', 'Eslint', 'Jira'],
   },
   {
     label: 'Design',
     labelTr: 'Tasarım',
     color: 'purple',
-    skills: ['Figma', 'Photoshop'],
+    skills: ['Figma', 'Photoshop', 'Illustrator', 'Adobe XD'],
   },
 ];
 
@@ -214,7 +214,7 @@ export default function ClassicSite() {
             ))}
           </ul>
 
-          <div className="cs-nav-actions">
+          <div className="cs-nav-mid">
             <button
               className="cs-lang-btn"
               onClick={() => setLanguage(language === 'en' ? 'tr' : 'en')}
@@ -226,14 +226,15 @@ export default function ClassicSite() {
               <span className="cs-terminal-btn-icon">$_</span>
               {t('Terminal', 'Terminal')}
             </Link>
-            <button
-              className={`cs-hamburger ${menuOpen ? 'cs-hamburger-open' : ''}`}
-              onClick={() => setMenuOpen(o => !o)}
-              aria-label="Menu"
-            >
-              <span /><span /><span />
-            </button>
           </div>
+
+          <button
+            className={`cs-hamburger ${menuOpen ? 'cs-hamburger-open' : ''}`}
+            onClick={() => setMenuOpen(o => !o)}
+            aria-label="Menu"
+          >
+            <span /><span /><span />
+          </button>
         </div>
       </nav>
 

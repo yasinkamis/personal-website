@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './GatePage.css';
 
+type Lang = 'en' | 'tr';
+
 const BOOT_LINES = [
   { prefix: 'BOOT', text: 'System initializing...', suffix: null },
   { prefix: 'INFO', text: 'Loading portfolio assets', suffix: 'OK' },
@@ -11,11 +13,42 @@ const BOOT_LINES = [
 
 const TIMINGS = [200, 750, 1350, 1950];
 
+const COPY = {
+  en: {
+    sectionLabel: 'ACCESS LEVEL DETECTION',
+    question: 'Do you know how to use a terminal?',
+    yes: 'YES',
+    no: 'NO',
+    yesMode: '→ Terminal Mode',
+    noMode: '→ Classic Mode',
+  },
+  tr: {
+    sectionLabel: 'ERİŞİM SEVİYESİ TESPİTİ',
+    question: 'Terminal kullanmayı biliyor musun?',
+    yes: 'EVET',
+    no: 'HAYIR',
+    yesMode: '→ Terminal Modu',
+    noMode: '→ Klasik Mod',
+  },
+};
+
 export default function GatePage() {
+  const [lang, setLang] = useState<Lang>(() => {
+    const saved = localStorage.getItem('language') as Lang;
+    return saved === 'en' || saved === 'tr' ? saved : 'en';
+  });
   const [visibleCount, setVisibleCount] = useState(0);
   const [showQuestion, setShowQuestion] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const navigate = useNavigate();
+
+  const c = COPY[lang];
+
+  const toggleLang = () => {
+    const next: Lang = lang === 'en' ? 'tr' : 'en';
+    setLang(next);
+    localStorage.setItem('language', next);
+  };
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -43,6 +76,11 @@ export default function GatePage() {
       <div className="gate-orb gate-orb-1" />
       <div className="gate-orb gate-orb-2" />
       <div className="gate-scanlines" />
+
+      {/* Language toggle — top right */}
+      <button className="gate-lang-btn" onClick={toggleLang}>
+        {lang === 'en' ? 'TR' : 'EN'}
+      </button>
 
       <div className="gate-window">
         <div className="gate-window-header">
@@ -76,12 +114,11 @@ export default function GatePage() {
           {showQuestion && (
             <div className="gate-question-area">
               <div className="gate-separator">
-                <span className="gate-separator-label">ACCESS LEVEL DETECTION</span>
+                <span className="gate-separator-label">{c.sectionLabel}</span>
               </div>
 
               <div className="gate-question-block">
-                <p className="gq-tr">Terminal kullanmayı biliyor musun?</p>
-                <p className="gq-en">Do you know how to use a terminal?</p>
+                <p className="gq-main">{c.question}</p>
               </div>
 
               <div className="gate-choice-row">
@@ -89,15 +126,15 @@ export default function GatePage() {
                   className="gate-choice-btn gate-choice-yes"
                   onClick={() => handleChoice('/terminal')}
                 >
-                  <span className="gcb-main">YES / EVET</span>
-                  <span className="gcb-sub">→ Terminal Mode</span>
+                  <span className="gcb-main">{c.yes}</span>
+                  <span className="gcb-sub">{c.yesMode}</span>
                 </button>
                 <button
                   className="gate-choice-btn gate-choice-no"
                   onClick={() => handleChoice('/classic')}
                 >
-                  <span className="gcb-main">NO / HAYIR</span>
-                  <span className="gcb-sub">→ Classic Mode</span>
+                  <span className="gcb-main">{c.no}</span>
+                  <span className="gcb-sub">{c.noMode}</span>
                 </button>
               </div>
             </div>

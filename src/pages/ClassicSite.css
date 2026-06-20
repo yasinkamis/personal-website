@@ -156,8 +156,8 @@
   transform: scaleX(1);
 }
 
-/* Actions */
-.cs-nav-actions {
+/* Mid actions (EN + Terminal) */
+.cs-nav-mid {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1170,6 +1170,11 @@
 }
 
 @media (max-width: 768px) {
+  .cs-nav-inner {
+    /* logo | (flex-1 centered mid) | hamburger */
+    gap: 12px;
+  }
+
   .cs-nav-links {
     display: none;
     position: fixed;
@@ -1198,9 +1203,18 @@
     padding: 12px;
   }
 
+  /* EN + Terminal: ortaya al */
+  .cs-nav-mid {
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Hamburger: en sağda */
   .cs-hamburger {
     display: flex;
     z-index: 100;
+    flex-shrink: 0;
+    order: 9;
   }
 
   .cs-section { padding: 64px 0; }

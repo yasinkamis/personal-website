@@ -11,7 +11,7 @@ const initialDataEN: PortfolioData = {
     bio: "I have more than four years of software development experience. I embarked on this journey starting with Python, followed by C++, C#, and JavaScript, and later developed an interest in Adobe Design Programs. This led me to enter the field of Frontend Development, where software and design converge. Producing high-quality content is of great importance to me. I am still eagerly developing myself in this field and learning the latest technologies.",
     avatar: "/assets/avatar.jpg",
     location: "Turkey",
-    skills: ["React", "Next.js", "Vite.js", "JavaScript", "TypeScript", "styled-components", "MUI", "Ant Design", "Tailwind", "Bootstrap", "SCSS", "GraphQL", "REST", "Node.js", "Git", "Docker", "Jenkins", "Figma", "Photoshop", "Eslint", "Jira", "Webpack"]
+    skills: ["React", "Next.js", "Vite.js", "JavaScript", "TypeScript", "Redux", "Zustand", "React Query", "styled-components", "MUI", "Ant Design", "Tailwind", "Bootstrap", "SCSS", "CSS3", "HTML5", "Framer Motion", "GraphQL", "REST", "Node.js", "Java", "Spring Boot", "Spring MVC", "Git", "Docker", "Jenkins", "Webpack", "Vite", "Figma", "Photoshop", "Illustrator", "Adobe XD", "Eslint", "Jira"]
   },
   overview: {
     greeting: "Hello, I'm",
@@ -146,7 +146,7 @@ const initialDataTR: PortfolioData = {
     bio: "Dört yılı aşkın yazılım geliştirme deneyimim var. Bu yolculuğa Python ile başladım, ardından C++, C# ve JavaScript ile devam ettim ve daha sonra Adobe Tasarım Programlarına ilgi duymaya başladım. Bu da beni yazılım ve tasarımın birleştiği Frontend Geliştirme alanına yöneltti. Yüksek kaliteli içerik üretmek benim için büyük önem taşıyor. Bu alanda kendimi hâlâ hevesle geliştiriyor ve en son teknolojileri öğreniyorum.",
     avatar: "/assets/avatar.jpg",
     location: "Türkiye",
-    skills: ["React", "Next.js", "Vite.js", "JavaScript", "TypeScript", "styled-components", "MUI", "Ant Design", "Tailwind", "Bootstrap", "SCSS", "GraphQL", "REST", "Node.js", "Git", "Docker", "Jenkins", "Figma", "Photoshop", "Eslint", "Jira", "Webpack"]
+    skills: ["React", "Next.js", "Vite.js", "JavaScript", "TypeScript", "Redux", "Zustand", "React Query", "styled-components", "MUI", "Ant Design", "Tailwind", "Bootstrap", "SCSS", "CSS3", "HTML5", "Framer Motion", "GraphQL", "REST", "Node.js", "Java", "Spring Boot", "Spring MVC", "Git", "Docker", "Jenkins", "Webpack", "Vite", "Figma", "Photoshop", "Illustrator", "Adobe XD", "Eslint", "Jira"]
   },
   overview: {
     greeting: "Merhaba, ben",
