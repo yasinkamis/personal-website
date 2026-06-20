@@ -1167,6 +1167,20 @@
     max-width: 100vw;
   }
 
+  .terminal-header {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .terminal-title {
+    display: none;
+  }
+
+  .terminal-actions {
+    margin-left: auto;
+    gap: 8px;
+  }
+
   .terminal-body {
     padding: 12px;
   }
