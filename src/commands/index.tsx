@@ -1,5 +1,6 @@
 import type { Command } from '../types';
 import { addMessage, getMessages, markMessageAsRead, deleteMessage, getStats } from '../services/dataService';
+import Icon from '../components/Icon';
 
 // ASCII Art for neofetch
 const asciiArt = `
@@ -94,7 +95,7 @@ export const commands: Record<string, Command> = {
         output: (
           <div className="help-output">
             <div className="help-section">
-              <span className="section-title">📋 {ctx.t('availableCommands')}</span>
+              <span className="section-title"><Icon name="list" /> {ctx.t('availableCommands')}</span>
               <div className="commands-grid">
                 {regularCommands.map(({ cmd, desc }) => (
                   <div key={cmd} className="command-item">
@@ -105,7 +106,7 @@ export const commands: Record<string, Command> = {
               </div>
             </div>
             <div className="help-section">
-              <span className="section-title">🎮 {ctx.t('funCommands')}</span>
+              <span className="section-title"><Icon name="gamepad" /> {ctx.t('funCommands')}</span>
               <div className="commands-grid">
                 {funCommands.map(({ cmd, desc }) => (
                   <div key={cmd} className="command-item">
@@ -117,7 +118,7 @@ export const commands: Record<string, Command> = {
             </div>
             {isAdmin && (
               <div className="help-section admin-section">
-                <span className="section-title">🔐 {ctx.t('adminCommands')}</span>
+                <span className="section-title"><Icon name="lock" /> {ctx.t('adminCommands')}</span>
                 <div className="commands-grid">
                   {adminCommands.map(({ cmd, desc }) => (
                     <div key={cmd} className="command-item">
@@ -149,10 +150,10 @@ export const commands: Record<string, Command> = {
               <div className="about-info">
                 <h2>{overview.greeting} <span className="highlight">{personal.name}</span></h2>
                 <p className="title">{personal.title}</p>
-                <p className="location">📍 {personal.location}</p>
+                <p className="location"><Icon name="pin" /> {personal.location}</p>
                 <div className="stats">
-                  <span>💼 {overview.yearsOfExperience}+ {ctx.t('yearsExperience')}</span>
-                  <span>🚀 {overview.projectsCompleted}+ {ctx.t('projects')}</span>
+                  <span><Icon name="briefcase" /> {overview.yearsOfExperience}+ {ctx.t('yearsExperience')}</span>
+                  <span><Icon name="rocket" /> {overview.projectsCompleted}+ {ctx.t('projects')}</span>
                 </div>
               </div>
             </div>
@@ -176,7 +177,7 @@ export const commands: Record<string, Command> = {
       return {
         output: (
           <div className="skills-output">
-            <h3>⚡ {ctx.t('mySkills')}</h3>
+            <h3><Icon name="bolt" /> {ctx.t('mySkills')}</h3>
             <div className="skills-tags">
               {skills.map((skill) => (
                 <span key={skill} className="skill-tag">{skill}</span>
@@ -198,7 +199,7 @@ export const commands: Record<string, Command> = {
       return {
         output: (
           <div className="experience-output">
-            <h3>💼 {ctx.t('workExperience')}</h3>
+            <h3><Icon name="briefcase" /> {ctx.t('workExperience')}</h3>
             {workExperience.map((exp, index) => (
               <div key={exp.id} className="exp-item">
                 <div className="exp-header">
@@ -206,8 +207,8 @@ export const commands: Record<string, Command> = {
                   <span className="exp-company">@ {exp.company}</span>
                 </div>
                 <div className="exp-meta">
-                  <span>📅 {exp.duration}</span>
-                  <span>📍 {exp.location}</span>
+                  <span><Icon name="calendar" /> {exp.duration}</span>
+                  <span><Icon name="pin" /> {exp.location}</span>
                 </div>
                 <p className="exp-desc">{exp.description}</p>
                 <div className="exp-tech">
@@ -234,7 +235,7 @@ export const commands: Record<string, Command> = {
       return {
         output: (
           <div className="education-output">
-            <h3>🎓 {ctx.t('myEducation')}</h3>
+            <h3><Icon name="cap" /> {ctx.t('myEducation')}</h3>
             {education.map(edu => (
               <div key={edu.id} className="edu-item">
                 <div className="edu-header">
@@ -242,9 +243,9 @@ export const commands: Record<string, Command> = {
                 </div>
                 <p className="edu-degree">{edu.degree}</p>
                 <div className="edu-meta">
-                  <span>📅 {edu.duration}</span>
-                  <span>📍 {edu.location}</span>
-                  <span>📊 GPA: {edu.gpa}</span>
+                  <span><Icon name="calendar" /> {edu.duration}</span>
+                  <span><Icon name="pin" /> {edu.location}</span>
+                  <span><Icon name="chart" /> GPA: {edu.gpa}</span>
                 </div>
                 <p className="edu-desc">{edu.description}</p>
                 <div className="edu-courses">
@@ -270,41 +271,41 @@ export const commands: Record<string, Command> = {
       return {
         output: (
           <div className="contact-output">
-            <h3>📬 {ctx.t('contactInfo')}</h3>
+            <h3><Icon name="inbox" /> {ctx.t('contactInfo')}</h3>
             <div className="contact-list">
               <div className="contact-item">
-                <span className="contact-icon">📧</span>
+                <span className="contact-icon"><Icon name="mail" /></span>
                 <span className="contact-label">Email:</span>
                 <a href={`mailto:${contact.email}`} className="contact-value">{contact.email}</a>
               </div>
               <div className="contact-item">
-                <span className="contact-icon">📍</span>
+                <span className="contact-icon"><Icon name="pin" /></span>
                 <span className="contact-label">{ctx.t('locationLabel')}:</span>
                 <span className="contact-value">{contact.location}</span>
               </div>
               <div className="contact-item">
-                <span className="contact-icon">🐙</span>
+                <span className="contact-icon"><Icon name="github" /></span>
                 <span className="contact-label">GitHub:</span>
                 <a href={contact.social.github} target="_blank" rel="noopener noreferrer" className="contact-value">{contact.social.github}</a>
               </div>
               <div className="contact-item">
-                <span className="contact-icon">💼</span>
+                <span className="contact-icon"><Icon name="linkedin" /></span>
                 <span className="contact-label">LinkedIn:</span>
                 <a href={contact.social.linkedin} target="_blank" rel="noopener noreferrer" className="contact-value">{contact.social.linkedin}</a>
               </div>
               <div className="contact-item">
-                <span className="contact-icon">✈️</span>
+                <span className="contact-icon"><Icon name="send" /></span>
                 <span className="contact-label">{ctx.t('availabilityLabel')}:</span>
                 <span className="contact-value">{contact.availability}</span>
               </div>
               <div className="contact-item">
-                <span className="contact-icon">⏰</span>
+                <span className="contact-icon"><Icon name="clock" /></span>
                 <span className="contact-label">{ctx.t('responseTimeLabel')}:</span>
                 <span className="contact-value">{contact.responseTime}</span>
               </div>
             </div>
             <p className="contact-tip">
-              💡 {ctx.t('contactTip')}
+              <Icon name="bulb" /> {ctx.t('contactTip')}
             </p>
           </div>
         ),
@@ -322,7 +323,7 @@ export const commands: Record<string, Command> = {
       return {
         output: (
           <div className="testimonials-output">
-            <h3>💬 {ctx.t('whatPeopleSay')}</h3>
+            <h3><Icon name="chat" /> {ctx.t('whatPeopleSay')}</h3>
             {testimonials.map((test, index) => (
               <div key={test.id} className="testimonial-item">
                 <p className="testimonial-text">"{test.text}"</p>
@@ -358,8 +359,8 @@ export const commands: Record<string, Command> = {
         ctx.setLanguage(lang);
         return {
           output: lang === 'en'
-            ? '🌐 Language changed to English!'
-            : '🌐 Dil Türkçe olarak değiştirildi!',
+            ? 'Language changed to English!'
+            : 'Dil Türkçe olarak değiştirildi!',
         };
       }
       return {
@@ -376,7 +377,7 @@ export const commands: Record<string, Command> = {
       return {
         output: (
           <div className="su-prompt">
-            <p>🔐 {ctx.t('enterCredentials')}</p>
+            <p><Icon name="lock" /> {ctx.t('enterCredentials')}</p>
             <p className="su-hint">
               {ctx.t('suUsage')}
             </p>
@@ -477,7 +478,7 @@ export const commands: Record<string, Command> = {
       return {
         output: (
           <div className="fortune-output">
-            <span className="fortune-icon">🔮</span>
+            <span className="fortune-icon"><Icon name="crystal" /></span>
             <p className="fortune-text">{randomFortune}</p>
           </div>
         ),
@@ -648,7 +649,7 @@ alias please='sudo'
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
       return {
-        output: `up ${days} days, ${hours}:${minutes.toString().padStart(2, '0')}, 1 user, load average: ☕☕☕`,
+        output: `up ${days} days, ${hours}:${minutes.toString().padStart(2, '0')}, 1 user, load average: 0.42, 0.37, 0.31`,
       };
     },
   },
@@ -701,7 +702,7 @@ alias please='sudo'
             <div className="curl-output">
               <p>Fetching GitHub profile...</p>
               <p className="curl-url">GET {contact.social.github}</p>
-              <p className="curl-success">✓ 200 OK</p>
+              <p className="curl-success"><Icon name="check" /> 200 OK</p>
               <a href={contact.social.github} target="_blank" rel="noopener noreferrer">
                 {ctx.t('clickToViewProfile')}
               </a>
@@ -716,7 +717,7 @@ alias please='sudo'
             <div className="curl-output">
               <p>Fetching LinkedIn profile...</p>
               <p className="curl-url">GET {contact.social.linkedin}</p>
-              <p className="curl-success">✓ 200 OK</p>
+              <p className="curl-success"><Icon name="check" /> 200 OK</p>
               <a href={contact.social.linkedin} target="_blank" rel="noopener noreferrer">
                 {ctx.t('clickToViewProfile')}
               </a>
@@ -744,7 +745,7 @@ alias please='sudo'
             <p className="hack-line delay-2">{'>'} {ctx.t('hackingProgress')}</p>
             <p className="hack-line delay-3">{'>'} Decrypting passwords...</p>
             <p className="hack-line delay-4">{'>'} Downloading database...</p>
-            <p className="hack-line delay-5">{'>'} Just kidding! 😄</p>
+            <p className="hack-line delay-5">{'>'} Just kidding!</p>
             <p className="hack-result">{ctx.t('hackingComplete')}</p>
           </div>
         ),
@@ -761,7 +762,7 @@ alias please='sudo'
           <div className="coffee-output">
             <p>{ctx.t('coffeeBrewStart')}</p>
             <pre className="coffee-ascii">{coffeeAscii}</pre>
-            <p>{ctx.t('coffeeBrewComplete')} ☕</p>
+            <p>{ctx.t('coffeeBrewComplete')} <Icon name="coffee" /></p>
             <p className="coffee-tip">
               {ctx.t('coffeeFunFact')}
             </p>
@@ -780,7 +781,7 @@ alias please='sudo'
         return {
           output: (
             <div className="sudo-output danger">
-              <p>🚨 ALERT! ALERT! 🚨</p>
+              <p><Icon name="alert" /> ALERT! ALERT! <Icon name="alert" /></p>
               <p>{ctx.t('rmJoke')}</p>
             </div>
           ),
@@ -807,13 +808,13 @@ alias please='sudo'
         return {
           output: (
             <div className="rm-output danger">
-              <p>🔥 INITIATING SYSTEM DESTRUCTION... 🔥</p>
+              <p><Icon name="flame" /> INITIATING SYSTEM DESTRUCTION... <Icon name="flame" /></p>
               <p className="rm-progress">Deleting system files... 0%</p>
               <p className="rm-progress">Deleting system files... 25%</p>
               <p className="rm-progress">Deleting system files... 50%</p>
               <p className="rm-progress">Deleting system files... 75%</p>
               <p className="rm-progress">Deleting system files... 99%</p>
-              <p className="rm-joke">Just kidding! 😜 {ctx.t('rmJoke')}</p>
+              <p className="rm-joke">Just kidding! {ctx.t('rmJoke')}</p>
             </div>
           ),
         };
@@ -871,7 +872,7 @@ alias please='sudo'
           return {
             output: (
               <div className="message-success">
-                <p>✅ {ctx.t('messageSuccess')}</p>
+                <p><Icon name="check" /> {ctx.t('messageSuccess')}</p>
                 <div className="message-details">
                   <p><strong>{ctx.t('from')}:</strong> {name} ({email})</p>
                   <p><strong>{ctx.t('subject')}:</strong> {subject}</p>
@@ -917,11 +918,11 @@ alias please='sudo'
         return {
           output: (
             <div className="messages-output">
-              <h3>📬 {ctx.t('inbox')} ({messages.length})</h3>
+              <h3><Icon name="inbox" /> {ctx.t('inbox')} ({messages.length})</h3>
               {messages.map((msg, index) => (
                 <div key={msg.id} className={`message-item ${msg.read ? 'read' : 'unread'}`}>
                   <div className="message-header">
-                    <span className="message-status">{msg.read ? '📭' : '📫'}</span>
+                    <span className="message-status">{msg.read ? <Icon name="mail-open" /> : <Icon name="mail" />}</span>
                     <span className="message-from">{msg.name} ({msg.email})</span>
                     <span className="message-date">{new Date(msg.createdAt).toLocaleString()}</span>
                   </div>
@@ -962,10 +963,10 @@ alias please='sudo'
         return {
           output: (
             <div className="stats-output">
-              <h3>📊 {ctx.t('siteStatistics')}</h3>
+              <h3><Icon name="chart" /> {ctx.t('siteStatistics')}</h3>
 
               <div className="stats-section">
-                <h4>👥 {ctx.t('visitors')}</h4>
+                <h4><Icon name="users" /> {ctx.t('visitors')}</h4>
                 <div className="stats-grid">
                   <div className="stat-item">
                     <span className="stat-value">{stats.totalVisitors}</span>
@@ -979,7 +980,7 @@ alias please='sudo'
               </div>
 
               <div className="stats-section">
-                <h4>💬 {ctx.t('messagesLabel')}</h4>
+                <h4><Icon name="chat" /> {ctx.t('messagesLabel')}</h4>
                 <div className="stats-grid">
                   <div className="stat-item">
                     <span className="stat-value">{stats.totalMessages}</span>
@@ -991,12 +992,12 @@ alias please='sudo'
                   </div>
                 </div>
                 <p className="stats-info">
-                  📅 {ctx.t('lastMessage')}: {lastMsgDate}
+                  <Icon name="calendar" /> {ctx.t('lastMessage')}: {lastMsgDate}
                 </p>
               </div>
 
               <div className="stats-section">
-                <h4>⌨️ {ctx.t('commandsLabel')}</h4>
+                <h4><Icon name="keyboard" /> {ctx.t('commandsLabel')}</h4>
                 <div className="stats-grid">
                   <div className="stat-item">
                     <span className="stat-value">{stats.totalCommands}</span>
@@ -1018,7 +1019,7 @@ alias please='sudo'
               </div>
 
               <div className="stats-section">
-                <h4>📁 {ctx.t('content')}</h4>
+                <h4><Icon name="folder" /> {ctx.t('content')}</h4>
                 <div className="stats-grid">
                   <div className="stat-item">
                     <span className="stat-value">{ctx.data?.personal.skills.length || 0}</span>

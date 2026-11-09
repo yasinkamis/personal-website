@@ -7,6 +7,7 @@ import { commands } from '../commands';
 import { trackCommand } from '../services/dataService';
 import type { TerminalOutput, CommandContext } from '../types';
 import './Terminal.css';
+import Icon from './Icon';
 
 const Terminal: React.FC = () => {
   const [input, setInput] = useState('');
@@ -129,12 +130,12 @@ const Terminal: React.FC = () => {
           id: generateId(),
           output: success ? (
             <div className="login-success">
-              <span className="success-icon">🔓</span>
+              <span className="success-icon"><Icon name="unlock" /></span>
               <span>{t('loginSuccess')}</span>
             </div>
           ) : (
             <div className="login-failed">
-              <span className="error-icon">🔒</span>
+              <span className="error-icon"><Icon name="lock" /></span>
               <span>{t('loginFailed')}</span>
             </div>
           ),
@@ -334,7 +335,7 @@ const Terminal: React.FC = () => {
 
       <div className="terminal-footer">
         <span className="footer-info">
-          {isProcessing ? `⏳ ${t('processing')}` : `✓ ${t('ready')}`}
+          {isProcessing ? <><Icon name="hourglass" /> {t('processing')}</> : <><Icon name="check" /> {t('ready')}</>}
         </span>
         <span className="footer-stats">
           {data?.personal.skills.length || 0} {t('skillsLabel')} | {data?.workExperience.length || 0} {t('jobsLabel')} | {data?.testimonials.length || 0} {t('testimonialsLabel')}

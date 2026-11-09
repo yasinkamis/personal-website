@@ -8,6 +8,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { createClassicScene, type SceneState } from '../three/ClassicScene';
 import type { PortfolioData } from '../types';
 import './ClassicSite.css';
+import Icon from '../components/Icon';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -539,7 +540,7 @@ function ClassicContent({ data }: { data: PortfolioData }) {
           <p className="cs-hero-bio">{overview.description.length > 220 ? `${overview.description.slice(0, 217)}…` : overview.description}</p>
           <div className="cs-hero-ctas">
             <a href="#contact" className="cs-btn cs-btn-primary cs-magnetic" onClick={navAnchor('#contact')}>
-              {t('Contact Me', 'İletişime Geç')}<span className="cs-btn-arrow">↗</span>
+              {t('Contact Me', 'İletişime Geç')}<span className="cs-btn-arrow"><Icon name="arrow" /></span>
             </a>
             <a href={contact.social.github} target="_blank" rel="noopener noreferrer" className="cs-btn cs-btn-ghost cs-magnetic">
               GitHub
@@ -569,7 +570,7 @@ function ClassicContent({ data }: { data: PortfolioData }) {
           <div key={ri} className={`cs-marquee-row ${ri ? 'cs-marquee-outline' : ''}`}>
             <div className="cs-marquee-track">
               {[...row, ...row, ...row, ...row].map((w, i) => (
-                <span key={i} className="cs-marquee-item">{w}<i>✦</i></span>
+                <span key={i} className="cs-marquee-item">{w}<i><Icon name="sparkle" /></i></span>
               ))}
             </div>
           </div>
@@ -588,9 +589,9 @@ function ClassicContent({ data }: { data: PortfolioData }) {
             <div className="cs-about-bio cs-glass cs-reveal">
               {personal.bio.split('\n\n').map((para, i) => <p key={i}>{para}</p>)}
               <div className="cs-about-meta">
-                <div className="cs-meta-item"><span className="cs-meta-icon">📍</span><span>{personal.location}</span></div>
-                <div className="cs-meta-item"><span className="cs-meta-icon">✉️</span><a href={`mailto:${contact.email}`}>{contact.email}</a></div>
-                <div className="cs-meta-item"><span className="cs-meta-icon">🟢</span><span>{contact.availability}</span></div>
+                <div className="cs-meta-item"><span className="cs-meta-icon"><Icon name="pin" /></span><span>{personal.location}</span></div>
+                <div className="cs-meta-item"><span className="cs-meta-icon"><Icon name="mail" /></span><a href={`mailto:${contact.email}`}>{contact.email}</a></div>
+                <div className="cs-meta-item"><span className="cs-meta-icon cs-meta-live"><Icon name="dot" /></span><span>{contact.availability}</span></div>
               </div>
             </div>
             <div className="cs-about-cards">
@@ -623,7 +624,7 @@ function ClassicContent({ data }: { data: PortfolioData }) {
               <div key={f.name} className={`cs-stack-tile cs-c-${f.c} cs-tilt cs-reveal`}>
                 <span className="cs-stack-tile-kicker">{language === 'tr' ? f.tr : f.en}</span>
                 <span className="cs-stack-tile-name">{f.name}</span>
-                <span className="cs-stack-tile-arrow">↗</span>
+                <span className="cs-stack-tile-arrow"><Icon name="arrow" /></span>
               </div>
             ))}
           </div>
@@ -694,13 +695,13 @@ function ClassicContent({ data }: { data: PortfolioData }) {
           <div className="cs-edu-cards">
             {education.map(edu => (
               <div key={edu.id} className="cs-edu-card cs-glass cs-tilt cs-reveal">
-                <div className="cs-edu-icon">🎓</div>
+                <div className="cs-edu-icon"><Icon name="cap" /></div>
                 <div className="cs-edu-body">
                   <h3 className="cs-edu-school">{edu.school}</h3>
                   <p className="cs-edu-degree">{edu.degree}</p>
                   <div className="cs-edu-meta">
-                    <span>📅 {edu.duration}</span>
-                    <span>📍 {edu.location}</span>
+                    <span><Icon name="calendar" /> {edu.duration}</span>
+                    <span><Icon name="pin" /> {edu.location}</span>
                     {edu.gpa && <span>GPA: {edu.gpa}</span>}
                   </div>
                   <p className="cs-edu-desc">{edu.description}</p>
@@ -772,14 +773,14 @@ function ClassicContent({ data }: { data: PortfolioData }) {
                 LinkedIn
               </a>
             </div>
-            <p className="cs-response-time">⚡ {contact.responseTime}</p>
+            <p className="cs-response-time"><Icon name="bolt" /> {contact.responseTime}</p>
           </div>
         </div>
       </section>
 
       {/* ── FOOTER ── */}
       <footer className="cs-footer">
-        <div className="cs-footer-giant" aria-hidden="true">{personal.name.toUpperCase()} ✦ {personal.name.toUpperCase()}</div>
+        <div className="cs-footer-giant" aria-hidden="true">{personal.name.toUpperCase()} — {personal.name.toUpperCase()}</div>
         <div className="cs-container">
           <p>
             {personal.name} · {new Date().getFullYear()}

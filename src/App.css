@@ -136,3 +136,8 @@ a:hover {
     box-shadow: none;
   }
 }
+
+/* inline SVG icons (replace emoji) */
+.ic { display: inline-block; width: 1.05em; height: 1.05em; vertical-align: -0.17em; margin-right: 0.4em; flex: none; }
+.contact-icon .ic, .cs-meta-icon .ic, .cs-edu-icon .ic, .fortune-icon .ic, .success-icon .ic, .error-icon .ic, .message-status .ic, .cs-marquee-item i .ic { margin-right: 0; }
+.fortune-icon .ic { width: 2.2em; height: 2.2em; }

@@ -389,3 +389,11 @@ html.lenis, html.lenis body { height: auto; }
 }
 /* compact pinned cards on shorter desktop viewports so tags always stay in view */
 @media (min-width: 901px) and (max-height: 820px) { .cs-exp-desc { -webkit-line-clamp: 3; } .cs-exp-index { font-size: 3.5rem; } }
+
+.cs-meta-icon { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: rgba(88, 166, 255, 0.12); color: var(--blue); flex: none; }
+.cs-meta-icon .ic { width: 18px; height: 18px; }
+.cs-meta-live { background: rgba(126, 231, 135, 0.14); color: var(--green); }
+.cs-edu-icon .ic { width: 36px; height: 36px; color: #79c0ff; }
+.cs-marquee-item i .ic { width: 1em; height: 1em; }
+.cs-response-time .ic { color: var(--orange); }
+.cs-btn-arrow .ic, .cs-stack-tile-arrow .ic { margin: 0; width: 1.1em; height: 1.1em; vertical-align: middle; }

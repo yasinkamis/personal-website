@@ -181,10 +181,10 @@ export const translations = {
 ║  Type 'about' to learn more about me.                         ║
 ║  Type 'contact' to get my contact information.                ║
 ║                                                                ║
-║  Have fun exploring! 🚀                                       ║
+║  Have fun exploring! >>                                       ║
 ╚══════════════════════════════════════════════════════════════╝
 `,
-    secretContent: '🤫 Shhh... The secret is: There is no secret. Just hard work and coffee!',
+    secretContent: 'Shhh... The secret is: There is no secret. Just hard work and coffee!',
     todoContent: `
 [x] Build an awesome portfolio
 [x] Learn React
@@ -375,10 +375,10 @@ export const translations = {
 ║  Hakkımda bilgi almak için 'about' yazın.                     ║
 ║  İletişim bilgilerim için 'contact' yazın.                    ║
 ║                                                                ║
-║  İyi keşifler! 🚀                                             ║
+║  İyi keşifler! >>                                             ║
 ╚══════════════════════════════════════════════════════════════╝
 `,
-    secretContent: '🤫 Şşşt... Sır şu: Sır yok. Sadece çok çalışma ve kahve!',
+    secretContent: 'Şşşt... Sır şu: Sır yok. Sadece çok çalışma ve kahve!',
     todoContent: `
 [x] Harika bir portfolyo yapmak
 [x] React öğrenmek
