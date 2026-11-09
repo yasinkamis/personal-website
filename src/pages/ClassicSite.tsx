@@ -18,7 +18,7 @@ const SKILL_CATS: { label: string; labelTr: string; skills: string[]; color: str
     label: 'Frontend',
     labelTr: 'Frontend',
     color: 'blue',
-    skills: ['React', 'Next.js', 'TypeScript', 'JavaScript', 'Redux', 'Zustand', 'React Query', 'styled-components', 'MUI', 'Ant Design', 'Tailwind', 'Bootstrap', 'SCSS', 'HTML5', 'CSS3', 'Framer Motion', 'GSAP', 'Three.js'],
+    skills: ['React', 'Next.js', 'Vite.js', 'TypeScript', 'JavaScript', 'Redux', 'Zustand', 'React Query', 'styled-components', 'MUI', 'Ant Design', 'Tailwind', 'Bootstrap', 'SCSS', 'jQuery', 'HTML5', 'CSS3', 'Framer Motion', 'GSAP', 'Three.js'],
   },
   {
     label: 'AI & Agentic',
@@ -36,7 +36,7 @@ const SKILL_CATS: { label: string; labelTr: string; skills: string[]; color: str
     label: 'Cloud & DevOps',
     labelTr: 'Bulut & DevOps',
     color: 'orange',
-    skills: ['Kubernetes', 'ArgoCD', 'Harbor', 'Docker', 'Jenkins', 'GitLab CI/CD', 'Nginx', 'Git', 'Webpack', 'Vite', 'ESLint'],
+    skills: ['Kubernetes', 'ArgoCD', 'Harbor', 'Docker', 'Jenkins', 'GitLab CI/CD', 'Nginx', 'Git', 'GitHub', 'Webpack', 'Gulp', 'ESLint'],
   },
   {
     label: 'Design',
@@ -60,7 +60,7 @@ const FEATURED: { name: string; en: string; tr: string; c: string }[] = [
 ];
 
 const MARQUEE_A = ['React', 'TypeScript', 'Next.js', 'Three.js', 'GSAP', 'Agentic AI', 'Keycloak', 'GraphQL'];
-const MARQUEE_B = ['Kubernetes', 'ArgoCD', 'Docker', 'Figma', 'Vite', 'Tailwind', 'Jenkins', 'SCSS'];
+const MARQUEE_B = ['Kubernetes', 'ArgoCD', 'Docker', 'Figma', 'Vite.js', 'Tailwind', 'Jenkins', 'SCSS'];
 
 const NAV_LINKS = [
   { href: '#about', label: 'About', labelTr: 'Hakkımda' },

@@ -5,9 +5,9 @@ import type { PortfolioData } from '../types';
 
 const SKILLS = [
   'React', 'Next.js', 'TypeScript', 'JavaScript', 'Redux', 'Zustand', 'React Query', 'styled-components', 'MUI', 'Ant Design',
-  'Tailwind', 'Bootstrap', 'SCSS', 'CSS3', 'HTML5', 'Framer Motion', 'GSAP', 'Three.js', 'GraphQL', 'REST', 'Node.js',
+  'Tailwind', 'Bootstrap', 'SCSS', 'jQuery', 'CSS3', 'HTML5', 'Framer Motion', 'GSAP', 'Three.js', 'GraphQL', 'REST', 'Node.js',
   'Keycloak', 'Agentic AI', 'AI Agent Kits', 'Kubernetes', 'ArgoCD', 'Harbor', 'Docker', 'Jenkins', 'GitLab CI/CD', 'Nginx',
-  'Git', 'Webpack', 'Vite', 'ESLint', 'Jira', 'Figma', 'Photoshop', 'Illustrator', 'Adobe XD',
+  'Git', 'GitHub', 'Webpack', 'Vite.js', 'Gulp', 'ESLint', 'Jira', 'Figma', 'Photoshop', 'Illustrator', 'Adobe XD',
 ];
 
 export const initialDataEN: PortfolioData = {
@@ -33,7 +33,7 @@ export const initialDataEN: PortfolioData = {
       duration: 'Jan 2023 – Present',
       location: 'Gebze, Kocaeli · Remote',
       description: "Leading frontend work across enterprise products: defining technical vision, architecture and standards, and taking projects from planning to production support.\n • Fişçek: AI-integrated expense app that extracts data from uploaded receipts; requests run through configurable approval workflows.\n • BAM (Business Automation Manager): 45+ React apps on shared UI libraries and a centralized design system, plus BAM Hub (communities, posts, announcements) and Android/iOS apps.\n • QApsam: AI-powered quality suite (Review, Test, Analyze); built the multi-tenant, role-based Review platform and the SEO/GEO-optimized landing page.\n • 32bit CRM: AI-integrated CRM built with agentic coding.\n • 32bit & TheFinTechBox Web/CMS: fully dynamic CMS and corporate sites.\n • Vakko Web Kasa: UI/UX and frontend of in-store POS apps.",
-      technologies: ['React', 'TypeScript', 'Next.js', 'Agentic AI', 'Keycloak', 'Kubernetes', 'ArgoCD', 'Docker', 'Jenkins', 'GitLab CI/CD', 'Nginx', 'Harbor'],
+      technologies: ['React', 'TypeScript', 'Next.js', 'Vite.js', 'Agentic AI', 'Keycloak', 'Kubernetes', 'ArgoCD', 'Docker', 'Jenkins', 'GitLab CI/CD', 'Nginx', 'Harbor'],
       achievements: [
         'Designed reusable FE/BE Agent Kits and AI-assisted development standards, leading Agentic AI adoption.',
         'Built a 45+ app React platform (BAM) on a shared design system and strict coding standards.',
@@ -182,7 +182,7 @@ export const initialDataTR: PortfolioData = {
       duration: 'Oca 2023 – Devam ediyor',
       location: 'Gebze, Kocaeli · Uzaktan',
       description: "Kurumsal ürünlerde frontend geliştirmeyi yönetiyorum: teknik vizyon, mimari ve standartları belirliyor, projeleri planlamadan canlı destek sürecine kadar taşıyorum.\n • Fişçek: Yüklenen fişlerden yapay zekâ ile veri çıkaran, yapılandırılabilir onay akışlarına sahip masraf uygulaması.\n • BAM (Business Automation Manager): Ortak UI kütüphaneleri ve merkezi tasarım sistemi üzerinde 45+ React uygulaması; BAM Hub (topluluklar, gönderiler, duyurular) ve Android/iOS uygulamaları.\n • QApsam: Yapay zekâ destekli kalite paketi (Review, Test, Analyze); çok kiracılı, rol tabanlı Review platformunu ve SEO/GEO optimizasyonlu tanıtım sayfasını geliştirdim.\n • 32bit CRM: Agentic coding ile geliştirilen yapay zekâ entegre CRM.\n • 32bit & TheFinTechBox Web/CMS: Tamamen dinamik CMS ve kurumsal siteler.\n • Vakko Web Kasa: Mağaza POS uygulamalarının UI/UX ve frontend geliştirmesi.",
-      technologies: ['React', 'TypeScript', 'Next.js', 'Agentic AI', 'Keycloak', 'Kubernetes', 'ArgoCD', 'Docker', 'Jenkins', 'GitLab CI/CD', 'Nginx', 'Harbor'],
+      technologies: ['React', 'TypeScript', 'Next.js', 'Vite.js', 'Agentic AI', 'Keycloak', 'Kubernetes', 'ArgoCD', 'Docker', 'Jenkins', 'GitLab CI/CD', 'Nginx', 'Harbor'],
       achievements: [
         'Yeniden kullanılabilir FE/BE Agent Kit’leri ve yapay zekâ destekli geliştirme standartlarını tasarlayarak Agentic AI benimsenmesine liderlik ettim.',
         'Ortak tasarım sistemi ve katı kodlama standartlarıyla 45+ uygulamalı React platformu (BAM) geliştirdim.',
