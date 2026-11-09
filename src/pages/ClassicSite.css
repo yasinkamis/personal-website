@@ -254,24 +254,25 @@ html.lenis, html.lenis body { height: auto; }
 
 /* ───────── EXPERIENCE ───────── */
 .cs-experience { padding: 0; }
-.cs-exp-pin { position: relative; min-height: 100vh; padding: 7rem 0 5rem; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
-.cs-exp-head { max-width: 1180px; width: 100%; margin: 0 auto 2.5rem; padding: 0 1.5rem; }
-.cs-exp-head .cs-section-title { font-size: clamp(2.4rem, 6vw, 4.6rem); }
-.cs-exp-bar { height: 2px; background: var(--line); margin-top: 1.6rem; max-width: 340px; }
+.cs-exp-pin { position: relative; height: 100vh; height: 100svh; padding: 5.2rem 0 1.6rem; display: flex; flex-direction: column; justify-content: flex-start; overflow: hidden; }
+.cs-exp-head { max-width: 1180px; width: 100%; margin: 0 auto 1.4rem; padding: 0 1.5rem; flex: none; }
+.cs-exp-head .cs-section-title { font-size: clamp(2rem, min(6vw, 8vh), 4.4rem); }
+.cs-exp-head .cs-tag { margin-bottom: 0.7rem; }
+.cs-exp-bar { height: 2px; background: var(--line); margin-top: 1rem; max-width: 340px; }
 .cs-exp-bar-fill { height: 100%; transform: scaleX(0); transform-origin: 0 50%; background: linear-gradient(90deg, var(--orange), var(--pink)); }
-.cs-exp-track { display: flex; gap: 2rem; padding: 0 max(1.5rem, calc((100vw - 1180px) / 2 + 1.5rem)); width: max-content; perspective: 1400px; will-change: transform; }
-.cs-exp-card { flex: 0 0 min(560px, 84vw); padding: 2.2rem; display: flex; flex-direction: column; gap: 1.1rem; }
+.cs-exp-track { flex: 1; min-height: 0; align-items: center; display: flex; gap: 2rem; padding: 0 max(1.5rem, calc((100vw - 1180px) / 2 + 1.5rem)); width: max-content; perspective: 1400px; will-change: transform; }
+.cs-exp-card { flex: 0 0 min(560px, 84vw); max-height: 100%; min-height: 0; padding: clamp(1.1rem, 2.6vh, 2.2rem) 2.2rem; display: flex; flex-direction: column; gap: clamp(0.6rem, 1.6vh, 1.1rem); }
 .cs-exp-index { position: absolute; right: 1.5rem; bottom: 0.6rem; pointer-events: none; font-size: 5rem; font-weight: 700; color: transparent; -webkit-text-stroke: 1px rgba(255, 166, 87, 0.35); line-height: 1; }
 .cs-exp-header { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; padding-right: 4rem; }
 .cs-exp-position { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.02em; }
 .cs-exp-company { color: var(--orange); font-weight: 500; margin-top: 0.25rem; }
 .cs-exp-meta-right { display: none; }
 .cs-exp-card .cs-exp-meta-right { display: flex; flex-direction: column; font-family: var(--mono); font-size: 0.74rem; color: var(--muted); gap: 0.2rem; text-align: right; }
-.cs-exp-desc { color: #e2e8f0; line-height: 1.7; font-size: 0.97rem; }
-.cs-exp-achievements { display: flex; flex-direction: column; gap: 0.5rem; }
+.cs-exp-desc { color: #e2e8f0; line-height: 1.6; font-size: 0.97rem; flex: none; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden; }
+.cs-exp-achievements { display: flex; flex-direction: column; gap: 0.5rem; flex: 0 1 auto; min-height: 0; overflow: hidden; -webkit-mask-image: linear-gradient(#000 calc(100% - 22px), transparent); mask-image: linear-gradient(#000 calc(100% - 22px), transparent); }
 .cs-exp-achievements li { position: relative; padding-left: 1.2rem; color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
 .cs-exp-achievements li::before { content: '▹'; position: absolute; left: 0; color: var(--green); }
-.cs-exp-tech { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: auto; }
+.cs-exp-tech { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: auto; flex: none; }
 .cs-tech-tag { font-family: var(--mono); font-size: 0.78rem; padding: 0.32rem 0.7rem; border-radius: 6px; background: rgba(88, 166, 255, 0.1); color: var(--blue); border: 1px solid rgba(88, 166, 255, 0.2); }
 .cs-tech-more { background: transparent; color: var(--muted); border-color: var(--line); }
 
@@ -330,7 +331,7 @@ html.lenis, html.lenis body { height: auto; }
 /* experience pin needs room: short landscape viewports use the stacked layout too */
 @media (max-width: 900px), (max-height: 639px) {
   .cs-experience { padding: 6rem 0; }
-  .cs-exp-pin { min-height: 0; padding: 0; }
+  .cs-exp-pin { min-height: 0; height: auto; padding: 0; }
   .cs-exp-bar { display: none; }
   .cs-exp-track { flex-direction: column; width: auto; padding: 0 1.5rem; }
   .cs-exp-card { flex: none; opacity: 1; }
@@ -362,7 +363,7 @@ html.lenis, html.lenis body { height: auto; }
   .cs-bignum { top: 3rem; }
   /* experience becomes a normal vertical stack */
   .cs-experience { padding: 6rem 0; }
-  .cs-exp-pin { min-height: 0; padding: 0; }
+  .cs-exp-pin { min-height: 0; height: auto; padding: 0; }
   .cs-exp-bar { display: none; }
   .cs-exp-track { flex-direction: column; width: auto; padding: 0 1.5rem; }
   .cs-exp-card { flex: none; opacity: 1; }
@@ -377,3 +378,14 @@ html.lenis, html.lenis body { height: auto; }
 @media (prefers-reduced-motion: reduce) {
   .cs-hero-scroll-dot, .cs-contact-email { animation: none; }
 }
+
+/* stacked experience layout (phones / short landscape): no clipping, show everything */
+@media (max-width: 900px), (max-height: 639px) {
+  .cs-exp-track { align-items: stretch; flex: none; }
+  .cs-exp-card { max-height: none; padding: 2rem 1.6rem; gap: 1.1rem; }
+  .cs-exp-desc { display: block; -webkit-line-clamp: unset; overflow: visible; }
+  .cs-exp-achievements { overflow: visible; -webkit-mask-image: none; mask-image: none; }
+  .cs-exp-head { margin-bottom: 2rem; }
+}
+/* compact pinned cards on shorter desktop viewports so tags always stay in view */
+@media (min-width: 901px) and (max-height: 820px) { .cs-exp-desc { -webkit-line-clamp: 3; } .cs-exp-index { font-size: 3.5rem; } }
