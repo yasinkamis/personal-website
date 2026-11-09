@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+type GateSceneApi = Awaited<ReturnType<typeof import('../three/GateScene')['createGateScene']>> | { setMood: (m: 'idle' | 'terminal' | 'classic') => void; warp: () => void; dispose: () => void };
 import './GatePage.css';
 
 type Lang = 'en' | 'tr';
@@ -41,6 +42,24 @@ export default function GatePage() {
   const [showQuestion, setShowQuestion] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const navigate = useNavigate();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const sceneRef = useRef<GateSceneApi | null>(null);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    let cancelled = false;
+    let disposeFn: (() => void) | null = null;
+    const canvas = canvasRef.current;
+    import('../three/GateScene').then(({ createGateScene }) => {
+      if (cancelled) return;
+      try {
+        const sc = createGateScene(canvas);
+        sceneRef.current = sc;
+        disposeFn = sc.dispose;
+      } catch { canvas.style.display = 'none'; }
+    });
+    return () => { cancelled = true; disposeFn?.(); sceneRef.current = null; };
+  }, []);
 
   const c = COPY[lang];
 
@@ -67,11 +86,13 @@ export default function GatePage() {
 
   const handleChoice = (path: string) => {
     setLeaving(true);
-    setTimeout(() => navigate(path), 650);
+    sceneRef.current?.warp();
+    setTimeout(() => navigate(path), 900);
   };
 
   return (
     <div className={`gate-page ${leaving ? 'gate-leaving' : ''}`}>
+      <canvas ref={canvasRef} className="gate-canvas" />
       <div className="gate-bg-grid" />
       <div className="gate-orb gate-orb-1" />
       <div className="gate-orb gate-orb-2" />
@@ -125,6 +146,8 @@ export default function GatePage() {
                 <button
                   className="gate-choice-btn gate-choice-yes"
                   onClick={() => handleChoice('/terminal')}
+                  onMouseEnter={() => sceneRef.current?.setMood('terminal')}
+                  onMouseLeave={() => sceneRef.current?.setMood('idle')}
                 >
                   <span className="gcb-main">{c.yes}</span>
                   <span className="gcb-sub">{c.yesMode}</span>
@@ -132,6 +155,8 @@ export default function GatePage() {
                 <button
                   className="gate-choice-btn gate-choice-no"
                   onClick={() => handleChoice('/classic')}
+                  onMouseEnter={() => { sceneRef.current?.setMood('classic'); void import('./ClassicSite'); }}
+                  onMouseLeave={() => sceneRef.current?.setMood('idle')}
                 >
                   <span className="gcb-main">{c.no}</span>
                   <span className="gcb-sub">{c.noMode}</span>

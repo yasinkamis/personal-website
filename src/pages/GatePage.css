@@ -12,9 +12,13 @@
   transition: opacity 0.65s ease;
 }
 
-.gate-leaving {
-  opacity: 0;
+.gate-leaving { animation: gate-flash 0.9s ease-in forwards; }
+@keyframes gate-flash {
+  0%, 55% { opacity: 1; filter: none; }
+  100% { opacity: 0; filter: brightness(3) blur(6px); }
 }
+.gate-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
+.gate-leaving .gate-window { transform: scale(1.12); opacity: 0; transition: transform .8s ease-in, opacity .5s ease-in; }
 
 /* ── Animated grid background ── */
 .gate-bg-grid {
@@ -35,6 +39,7 @@
 
 /* ── Glowing orbs ── */
 .gate-orb {
+  display: none;
   position: fixed;
   border-radius: 50%;
   filter: blur(90px);
@@ -107,11 +112,12 @@
 
 /* ── Terminal window ── */
 .gate-window {
+  backdrop-filter: blur(10px);
   position: relative;
   z-index: 10;
   width: 640px;
   max-width: calc(100vw - 32px);
-  background: #0d1117;
+  background: rgba(13, 17, 23, 0.78);
   border-radius: 12px;
   border: 1px solid #30363d;
   box-shadow:
