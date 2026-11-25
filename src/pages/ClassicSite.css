@@ -371,7 +371,7 @@ html.lenis, html.lenis body { height: auto; }
   .cs-nav-links-mobile li { padding: 0.28rem 0; }
   .cs-nav-links-mobile .cs-nav-link { font-size: 1.15rem; font-weight: 600; line-height: 1.2; }
   .cs-nav-links-mobile .cs-nav-link-accent { font-size: 1.05rem !important; }
-  .cs-nav-links-open { opacity: 1; pointer-events: auto; }
+  .classic-site .cs-nav-links-open { opacity: 1; pointer-events: auto; }
   .cs-nav-mid .cs-terminal-btn { display: none; }
   .cs-hamburger { position: relative; z-index: 110; }
 }
