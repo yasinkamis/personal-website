@@ -196,7 +196,7 @@ function ClassicContent({ data }: { data: PortfolioData }) {
 
   const typeTitles = useMemo(() => (
     language === 'tr'
-      ? ['Frontend Geliştirici', 'Takım Lideri', 'UI/UX Tutkunu', 'Creative Developer']
+      ? ['Frontend Geliştirici', 'Takım Lideri', 'UI/UX Tutkunu', 'Yaratıcı Geliştirici']
       : ['Frontend Developer', 'Team Lead', 'UI/UX Enthusiast', 'Creative Developer']
   ), [language]);
   const typed = useTypewriter(typeTitles);
@@ -498,7 +498,7 @@ function ClassicContent({ data }: { data: PortfolioData }) {
       </div>
 
       {/* ── NAVBAR ── */}
-      <nav className={`cs-nav ${navScrolled ? 'cs-nav-scrolled' : ''}`}>
+      <nav className={`cs-nav ${navScrolled ? 'cs-nav-scrolled' : ''} ${menuOpen ? 'cs-nav-menu-open' : ''}`}>
         <div className="cs-nav-inner">
           <a href="#hero" className="cs-logo cs-magnetic" onClick={navAnchor('#hero')} aria-label="Yasin Kamış">
             <Logo size={30} />
@@ -610,7 +610,7 @@ function ClassicContent({ data }: { data: PortfolioData }) {
           </div>
         </div>
         <a href="#about" className="cs-hero-scroll" onClick={navAnchor('#about')}>
-          <span className="cs-hero-scroll-label">scroll</span>
+          <span className="cs-hero-scroll-label">{t('scroll', 'kaydır')}</span>
           <span className="cs-hero-scroll-line"><span className="cs-hero-scroll-dot" /></span>
         </a>
       </section>
