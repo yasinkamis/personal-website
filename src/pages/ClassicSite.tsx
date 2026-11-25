@@ -9,6 +9,7 @@ import { createClassicScene, type SceneState } from '../three/ClassicScene';
 import type { PortfolioData } from '../types';
 import './ClassicSite.css';
 import Icon from '../components/Icon';
+import Logo from '../components/Logo';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,7 +19,31 @@ const SKILL_CATS: { label: string; labelTr: string; skills: string[]; color: str
     label: 'Frontend',
     labelTr: 'Frontend',
     color: 'blue',
-    skills: ['React', 'Next.js', 'Vite.js', 'TypeScript', 'JavaScript', 'Redux', 'Zustand', 'React Query', 'styled-components', 'MUI', 'Ant Design', 'Tailwind', 'Bootstrap', 'SCSS', 'jQuery', 'HTML5', 'CSS3', 'Framer Motion', 'GSAP', 'Three.js'],
+    skills: ['React', 'Next.js', 'Vite.js', 'TypeScript', 'JavaScript (ES6+)', 'HTML5', 'CSS3', 'SCSS/Sass', 'Redux', 'Redux Toolkit', 'Zustand', 'React Query', 'Zod', 'React Hook Form', 'Axios'],
+  },
+  {
+    label: 'React Patterns & Architecture',
+    labelTr: 'React Desenleri & Mimari',
+    color: 'cyan',
+    skills: ['Server Components', 'App Router', 'SSR / SSG / ISR', 'Custom Hooks', 'Context API', 'Suspense', 'Error Boundaries', 'Code Splitting', 'Lazy Loading', 'Component Architecture'],
+  },
+  {
+    label: 'Styling, UI & Animation',
+    labelTr: 'Stil, UI & Animasyon',
+    color: 'purple',
+    skills: ['Tailwind', 'styled-components', 'Emotion', 'CSS Modules', 'MUI', 'Ant Design', 'Bootstrap', 'Radix UI', 'shadcn/ui', 'CSS Grid', 'Flexbox', 'Framer Motion', 'GSAP', 'Lenis', 'Three.js'],
+  },
+  {
+    label: 'Performance, SEO & Quality',
+    labelTr: 'Performans, SEO & Kalite',
+    color: 'green',
+    skills: ['Web Performance', 'Core Web Vitals', 'Lighthouse', 'SEO', 'GEO', 'Accessibility (a11y)', 'PWA', 'Service Workers', 'Responsive Design', 'Cross-browser', 'i18n'],
+  },
+  {
+    label: 'Testing & Tooling',
+    labelTr: 'Test & Araçlar',
+    color: 'orange',
+    skills: ['Jest', 'Vitest', 'Testing Library', 'Cypress', 'Playwright', 'ESLint', 'Prettier', 'Webpack', 'Turbopack', 'npm', 'pnpm'],
   },
   {
     label: 'AI & Agentic',
@@ -30,13 +55,13 @@ const SKILL_CATS: { label: string; labelTr: string; skills: string[]; color: str
     label: 'Backend & Auth',
     labelTr: 'Backend & Kimlik',
     color: 'green',
-    skills: ['Node.js', 'GraphQL', 'REST', 'Keycloak', 'PKCE / OAuth', 'CMS Architecture'],
+    skills: ['Node.js', 'Java', 'Python', 'GraphQL', 'REST', 'WebSockets', 'Keycloak', 'CMS Architecture'],
   },
   {
     label: 'Cloud & DevOps',
     labelTr: 'Bulut & DevOps',
     color: 'orange',
-    skills: ['Kubernetes', 'ArgoCD', 'Harbor', 'Docker', 'Jenkins', 'GitLab CI/CD', 'Nginx', 'Git', 'GitHub', 'Webpack', 'Gulp', 'ESLint'],
+    skills: ['Kubernetes', 'ArgoCD', 'Harbor', 'Docker', 'Jenkins', 'GitLab CI/CD', 'Nginx', 'Git', 'GitHub'],
   },
   {
     label: 'Design',
@@ -54,8 +79,9 @@ const SKILL_CATS: { label: string; labelTr: string; skills: string[]; color: str
 
 const FEATURED: { name: string; en: string; tr: string; c: string }[] = [
   { name: 'React', en: 'UI engineering', tr: 'Arayüz mühendisliği', c: 'blue' },
-  { name: 'TypeScript', en: 'Type-safe at scale', tr: 'Ölçekte tip güvenliği', c: 'purple' },
   { name: 'Next.js', en: 'Full-stack React', tr: 'Full-stack React', c: 'green' },
+  { name: 'Vite.js', en: 'Lightning-fast builds', tr: 'Şimşek hızında build', c: 'purple' },
+  { name: 'TypeScript', en: 'Type-safe at scale', tr: 'Ölçekte tip güvenliği', c: 'blue' },
   { name: 'Agentic AI', en: 'AI-driven workflows', tr: 'Yapay zekâ destekli akışlar', c: 'pink' },
 ];
 
@@ -352,9 +378,9 @@ function ClassicContent({ data }: { data: PortfolioData }) {
         el.addEventListener('pointerenter', () => gsap.to(st, { boost: 1, duration: 0.8, ease: 'power3.out' }));
         el.addEventListener('pointerleave', () => gsap.to(st, { boost: 0, duration: 1, ease: 'power3.out' }));
       });
-      gsap.fromTo('.cs-footer-giant', { xPercent: 12 }, {
-        xPercent: -22, ease: 'none',
-        scrollTrigger: { trigger: '.cs-footer', start: 'top bottom', end: 'bottom bottom', scrub: true },
+      gsap.from('.cs-footer-giant', {
+        opacity: 0, y: 30, duration: 1,
+        scrollTrigger: { trigger: '.cs-footer', start: 'top 92%' },
       });
 
       /* ── Tilt cards ── */
@@ -458,7 +484,7 @@ function ClassicContent({ data }: { data: PortfolioData }) {
       {/* ── PRELOADER ── */}
       <div className="cs-preloader">
         <div className="cs-preloader-inner">
-          <div className="cs-preloader-logo">&lt;YK/&gt;</div>
+          <div className="cs-preloader-logo"><Logo size={64} /></div>
           <div className="cs-preloader-num">000</div>
           <div className="cs-preloader-bar"><div className="cs-preloader-bar-fill" /></div>
           <div className="cs-preloader-text">{t('initializing experience', 'deneyim hazırlanıyor')}</div>
@@ -468,8 +494,8 @@ function ClassicContent({ data }: { data: PortfolioData }) {
       {/* ── NAVBAR ── */}
       <nav className={`cs-nav ${navScrolled ? 'cs-nav-scrolled' : ''}`}>
         <div className="cs-nav-inner">
-          <a href="#hero" className="cs-logo cs-magnetic" onClick={navAnchor('#hero')}>
-            <span className="cs-logo-bracket">&lt;</span>YK<span className="cs-logo-bracket">/&gt;</span>
+          <a href="#hero" className="cs-logo cs-magnetic" onClick={navAnchor('#hero')} aria-label="Yasin Kamış">
+            <Logo size={30} />
           </a>
 
           <ul className="cs-nav-links cs-nav-links-desktop">
@@ -494,6 +520,9 @@ function ClassicContent({ data }: { data: PortfolioData }) {
             >
               {language.toUpperCase()}
             </button>
+            <Link to="/blog" className="cs-terminal-btn cs-magnetic">
+              <span className="cs-terminal-btn-icon">✎</span>Blog
+            </Link>
             <Link to="/terminal" className="cs-terminal-btn cs-magnetic">
               <span className="cs-terminal-btn-icon">$_</span>Terminal
             </Link>
@@ -591,7 +620,6 @@ function ClassicContent({ data }: { data: PortfolioData }) {
               <div className="cs-about-meta">
                 <div className="cs-meta-item"><span className="cs-meta-icon"><Icon name="pin" /></span><span>{personal.location}</span></div>
                 <div className="cs-meta-item"><span className="cs-meta-icon"><Icon name="mail" /></span><a href={`mailto:${contact.email}`}>{contact.email}</a></div>
-                <div className="cs-meta-item"><span className="cs-meta-icon cs-meta-live"><Icon name="dot" /></span><span>{contact.availability}</span></div>
               </div>
             </div>
             <div className="cs-about-cards">
@@ -780,7 +808,7 @@ function ClassicContent({ data }: { data: PortfolioData }) {
 
       {/* ── FOOTER ── */}
       <footer className="cs-footer">
-        <div className="cs-footer-giant" aria-hidden="true">{personal.name.toUpperCase()} — {personal.name.toUpperCase()}</div>
+        <div className="cs-footer-giant" aria-hidden="true">{personal.name.toUpperCase()}</div>
         <div className="cs-container">
           <p>
             {personal.name} · {new Date().getFullYear()}

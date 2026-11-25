@@ -4,10 +4,35 @@ import type { PortfolioData } from '../types';
    Source: LinkedIn profile, Nov 2026. */
 
 const SKILLS = [
-  'React', 'Next.js', 'TypeScript', 'JavaScript', 'Redux', 'Zustand', 'React Query', 'styled-components', 'MUI', 'Ant Design',
-  'Tailwind', 'Bootstrap', 'SCSS', 'jQuery', 'CSS3', 'HTML5', 'Framer Motion', 'GSAP', 'Three.js', 'GraphQL', 'REST', 'Node.js',
-  'Keycloak', 'Agentic AI', 'AI Agent Kits', 'Kubernetes', 'ArgoCD', 'Harbor', 'Docker', 'Jenkins', 'GitLab CI/CD', 'Nginx',
-  'Git', 'GitHub', 'Webpack', 'Vite.js', 'Gulp', 'ESLint', 'Jira', 'Figma', 'Photoshop', 'Illustrator', 'Adobe XD',
+  // Core frontend
+  'React', 'Next.js', 'TypeScript', 'JavaScript (ES6+)', 'HTML5', 'CSS3', 'SCSS/Sass',
+  // React patterns & architecture
+  'Server Components', 'App Router', 'SSR / SSG / ISR', 'Custom Hooks', 'Context API',
+  'Suspense', 'Error Boundaries', 'Code Splitting', 'Lazy Loading', 'Component Architecture',
+  // State & data
+  'Redux', 'Redux Toolkit', 'Zustand', 'React Query', 'Zod', 'React Hook Form', 'Formik', 'Axios',
+  // Styling & UI
+  'Tailwind', 'styled-components', 'Emotion', 'CSS Modules', 'PostCSS', 'MUI', 'Ant Design',
+  'Bootstrap', 'Radix UI', 'shadcn/ui', 'CSS Grid', 'Flexbox',
+  // Animation & 3D
+  'Framer Motion', 'GSAP', 'Lenis', 'Three.js', 'WebGL', 'Canvas API',
+  // Build & tooling
+  'Vite.js', 'Webpack', 'Turbopack', 'ESLint', 'Prettier', 'npm', 'pnpm',
+  // Testing
+  'Jest', 'Vitest', 'Testing Library', 'Cypress', 'Playwright',
+  // APIs & realtime
+  'REST', 'GraphQL', 'WebSockets', 'Server-Sent Events',
+  // Quality & craft
+  'Web Performance', 'Core Web Vitals', 'Lighthouse', 'Accessibility (a11y)', 'SEO', 'GEO',
+  'PWA', 'Service Workers', 'Responsive Design', 'Cross-browser', 'i18n',
+  // Languages & runtime
+  'Node.js', 'Java', 'Python',
+  // Auth & AI
+  'Keycloak', 'Agentic AI', 'AI Agent Kits',
+  // DevOps
+  'Docker', 'Kubernetes', 'ArgoCD', 'Jenkins', 'GitLab CI/CD', 'Nginx', 'Harbor',
+  // Workflow & design
+  'Git', 'GitHub', 'Jira', 'Figma', 'Photoshop', 'Illustrator', 'Adobe XD',
 ];
 
 export const initialDataEN: PortfolioData = {
@@ -23,7 +48,7 @@ export const initialDataEN: PortfolioData = {
     greeting: "Hello, I'm",
     description: 'Frontend Developer building scalable, production-ready interfaces and AI-assisted developer tooling.',
     yearsOfExperience: 5,
-    projectsCompleted: 20,
+    projectsCompleted: 30,
   },
   workExperience: [
     {
@@ -37,7 +62,7 @@ export const initialDataEN: PortfolioData = {
       achievements: [
         'Designed reusable FE/BE Agent Kits and AI-assisted development standards, leading Agentic AI adoption.',
         'Built a 45+ app React platform (BAM) on a shared design system and strict coding standards.',
-        'Delivered Keycloak-based auth (PKCE, token/refresh lifecycle, sessions) and Kubernetes/ArgoCD CI/CD deployments.',
+        'Delivered Keycloak-based authentication (login flows, token/refresh lifecycle, session management) and Kubernetes/ArgoCD CI/CD deployments.',
         'Mentored engineers and interns through training and code reviews.',
       ],
     },
@@ -172,7 +197,7 @@ export const initialDataTR: PortfolioData = {
     greeting: 'Merhaba, ben',
     description: 'Ölçeklenebilir, üretime hazır arayüzler ve yapay zekâ destekli geliştirici araçları geliştiren Frontend Geliştirici.',
     yearsOfExperience: 5,
-    projectsCompleted: 20,
+    projectsCompleted: 30,
   },
   workExperience: [
     {
@@ -186,7 +211,7 @@ export const initialDataTR: PortfolioData = {
       achievements: [
         'Yeniden kullanılabilir FE/BE Agent Kit’leri ve yapay zekâ destekli geliştirme standartlarını tasarlayarak Agentic AI benimsenmesine liderlik ettim.',
         'Ortak tasarım sistemi ve katı kodlama standartlarıyla 45+ uygulamalı React platformu (BAM) geliştirdim.',
-        'Keycloak tabanlı kimlik doğrulama (PKCE, token/refresh yaşam döngüsü, oturum yönetimi) ve Kubernetes/ArgoCD CI/CD süreçlerinde çalıştım.',
+        'Keycloak tabanlı kimlik doğrulama (giriş akışları, token/refresh yaşam döngüsü, oturum yönetimi) ve Kubernetes/ArgoCD CI/CD süreçlerinde çalıştım.',
         'Eğitimler ve kod incelemeleriyle mühendislere ve stajyerlere mentorluk yaptım.',
       ],
     },
