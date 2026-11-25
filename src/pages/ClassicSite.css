@@ -310,7 +310,7 @@ html.lenis, html.lenis body { height: auto; }
 .cs-contact-desc { font-size: 1.15rem; color: var(--muted); max-width: 32rem; line-height: 1.7; }
 .cs-contact-email {
   display: inline-block; max-width: 100%; white-space: nowrap;
-  font-size: clamp(1rem, 6.4vw, 3.8rem); font-weight: 700; letter-spacing: -0.03em;
+  font-size: clamp(0.8rem, 4.8vw, 3.8rem); font-weight: 700; letter-spacing: -0.03em;
   background: linear-gradient(120deg, var(--blue), var(--purple), var(--pink), var(--blue)); background-size: 250% 100%;
   -webkit-background-clip: text; background-clip: text; color: transparent; animation: cs-shift 6s linear infinite;
 }
@@ -374,7 +374,13 @@ html.lenis, html.lenis body { height: auto; }
 @media (max-width: 900px) {
   .cs-section { padding: 6rem 0; }
   .cs-about-grid, .cs-skills-grid { grid-template-columns: 1fr; }
-  .cs-hero-content { padding-top: 6rem; }
+  .cs-hero { min-height: 100svh; }
+  .cs-hero-content { padding: 6rem 1.25rem 3rem; }
+  .cs-hero-name { margin-bottom: 1.1rem; }
+  .cs-hero-title-row { margin-bottom: 1.1rem; }
+  .cs-hero-bio { font-size: 1rem; margin-bottom: 1.8rem; }
+  .cs-hero-ctas { gap: 0.8rem; margin-bottom: 2rem; }
+  .cs-hero-stat-val { font-size: 2.1rem; }
   .cs-bignum { top: 3rem; }
   /* experience becomes a normal vertical stack */
   .cs-experience { padding: 6rem 0; }
@@ -386,6 +392,8 @@ html.lenis, html.lenis body { height: auto; }
   .cs-hero-scroll { display: none; }
 }
 @media (max-width: 520px) {
+  .cs-hero-name { font-size: clamp(2.5rem, 12vw, 4rem); line-height: 1.02; }
+  .cs-hero-stats { gap: 1.3rem; }
   .cs-about-cards { grid-template-columns: 1fr 1fr; }
   .cs-exp-header { flex-direction: column; padding-right: 3rem; }
   .cs-exp-card .cs-exp-meta-right { text-align: left; }

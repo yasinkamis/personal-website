@@ -1,31 +1,5 @@
 import * as THREE from 'three';
 
-const WARP_VERT = /* glsl */ `
-uniform float uTime;
-uniform float uSpeed;
-uniform float uDepth;
-attribute float aEnd;
-attribute float aSeed;
-varying float vA;
-varying float vSeed;
-void main(){
-  vec3 p = position;
-  float z = mod(p.z + uTime*uSpeed, uDepth) - uDepth + 6.0;
-  p.z = z - aEnd * (0.25 + uSpeed*0.06);
-  vSeed = aSeed;
-  vA = smoothstep(-uDepth, -uDepth*0.6, z) * (1.0 - aEnd*0.7);
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(p,1.0);
-}`;
-
-const WARP_FRAG = /* glsl */ `
-uniform vec3 uColorA;
-uniform vec3 uColorB;
-varying float vA;
-varying float vSeed;
-void main(){
-  gl_FragColor = vec4(mix(uColorA,uColorB,vSeed), vA);
-}`;
-
 export type GateMood = 'idle' | 'terminal' | 'classic';
 export type GateKey = 'terminal' | 'classic';
 
@@ -40,9 +14,9 @@ const MOODS: Record<GateMood, [string, string]> = {
   classic: ['#79c0ff', '#ff7ab6'],
 };
 
-const PORTAL_DEF: Record<GateKey, { x: number; title: string; sub: string; color: string }> = {
-  terminal: { x: -3.35, title: 'TERMINAL', sub: '$_  power user', color: '#7ee787' },
-  classic: { x: 3.35, title: 'CLASSIC', sub: '◆  visual tour', color: '#79c0ff' },
+const PORTAL_DEF: Record<GateKey, { title: string; sub: string; color: string }> = {
+  terminal: { title: 'TERMINAL', sub: '$_  power user', color: '#7ee787' },
+  classic: { title: 'CLASSIC', sub: '◆  visual tour', color: '#79c0ff' },
 };
 
 /** Draw a portal label onto a canvas and return it as a texture. */
@@ -54,152 +28,170 @@ function makeLabelTexture(title: string, sub: string, color: string): THREE.Canv
   cv.height = h;
   const ctx = cv.getContext('2d')!;
   ctx.clearRect(0, 0, w, h);
-
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-
   ctx.fillStyle = color;
   ctx.shadowColor = color;
-  ctx.shadowBlur = 24;
-  ctx.font = '800 76px Inter, "Segoe UI", system-ui, sans-serif';
-  ctx.fillText(title, w / 2, h / 2 - 20);
-
+  ctx.shadowBlur = 26;
+  ctx.font = '800 78px Inter, "Segoe UI", system-ui, sans-serif';
+  ctx.fillText(title, w / 2, h / 2 - 22);
   ctx.shadowBlur = 0;
-  ctx.fillStyle = 'rgba(230,236,245,0.72)';
+  ctx.fillStyle = 'rgba(230,236,245,0.78)';
   ctx.font = '500 30px "JetBrains Mono", monospace';
-  ctx.fillText(sub, w / 2, h / 2 + 52);
-
+  ctx.fillText(sub, w / 2, h / 2 + 54);
   const tex = new THREE.CanvasTexture(cv);
   tex.anisotropy = 4;
-  tex.needsUpdate = true;
   return tex;
 }
 
 export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) {
   const isMobile = window.innerWidth < 800;
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.25 : 1.75));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 1.9));
   renderer.setSize(window.innerWidth, window.innerHeight, false);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(68, window.innerWidth / window.innerHeight, 0.1, 200);
-  camera.position.set(0, 0, 7);
+  scene.fog = new THREE.FogExp2(0x02050b, isMobile ? 0.05 : 0.042);
+
+  const camera = new THREE.PerspectiveCamera(isMobile ? 74 : 66, window.innerWidth / window.innerHeight, 0.1, 200);
+  camera.position.set(0, 0.4, 8);
 
   const colorA = new THREE.Color(MOODS.idle[0]);
   const colorB = new THREE.Color(MOODS.idle[1]);
   const tA = new THREE.Color();
 
-  /* ── background warp field ── */
-  const N = isMobile ? 420 : 1100;
-  const pos = new Float32Array(N * 2 * 3);
-  const end = new Float32Array(N * 2);
-  const seed = new Float32Array(N * 2);
-  for (let i = 0; i < N; i++) {
-    const a = Math.random() * Math.PI * 2;
-    const r = 2.2 + Math.pow(Math.random(), 1.4) * 22;
-    const x = Math.cos(a) * r;
-    const y = Math.sin(a) * r * 0.65;
-    const z = Math.random() * 90;
-    const s = Math.random();
-    for (let k = 0; k < 2; k++) {
-      const o = (i * 2 + k) * 3;
-      pos[o] = x;
-      pos[o + 1] = y;
-      pos[o + 2] = z;
-      end[i * 2 + k] = k;
-      seed[i * 2 + k] = s;
-    }
-  }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  geo.setAttribute('aEnd', new THREE.BufferAttribute(end, 1));
-  geo.setAttribute('aSeed', new THREE.BufferAttribute(seed, 1));
-  const mat = new THREE.ShaderMaterial({
-    vertexShader: WARP_VERT,
-    fragmentShader: WARP_FRAG,
-    transparent: true,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
-    uniforms: {
-      uTime: { value: 0 },
-      uSpeed: { value: 1.2 },
-      uDepth: { value: 90 },
-      uColorA: { value: colorA },
-      uColorB: { value: colorB },
-    },
-  });
-  scene.add(new THREE.LineSegments(geo, mat));
+  const disposables: Array<{ dispose(): void }> = [];
+  const track = <T extends { dispose(): void }>(o: T): T => { disposables.push(o); return o; };
 
-  /* ── two selectable portals ── */
+  /* ── floor + ceiling grid (the "hall") ── */
+  const gridColor = new THREE.Color('#2a3a66');
+  const floor = new THREE.GridHelper(80, 80, gridColor, gridColor);
+  (floor.material as THREE.Material & { transparent: boolean; opacity: number }).transparent = true;
+  (floor.material as THREE.Material & { opacity: number }).opacity = 0.22;
+  floor.position.y = -2.4;
+  scene.add(floor);
+  disposables.push(floor.geometry, floor.material as THREE.Material);
+
+  const ceiling = new THREE.GridHelper(80, 80, gridColor, gridColor);
+  (ceiling.material as THREE.Material & { transparent: boolean; opacity: number }).transparent = true;
+  (ceiling.material as THREE.Material & { opacity: number }).opacity = 0.12;
+  ceiling.position.y = 5.5;
+  scene.add(ceiling);
+  disposables.push(ceiling.geometry, ceiling.material as THREE.Material);
+
+  /* ── ambient particles ── */
+  const pN = isMobile ? 220 : 520;
+  const pPos = new Float32Array(pN * 3);
+  for (let i = 0; i < pN; i++) {
+    pPos[i * 3] = (Math.random() - 0.5) * 50;
+    pPos[i * 3 + 1] = (Math.random() - 0.5) * 16;
+    pPos[i * 3 + 2] = -Math.random() * 60 + 6;
+  }
+  const pGeo = track(new THREE.BufferGeometry());
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+  const pMat = track(new THREE.PointsMaterial({
+    color: 0x9fc0ff, size: isMobile ? 0.05 : 0.04, transparent: true, opacity: 0.6,
+    blending: THREE.AdditiveBlending, depthWrite: false,
+  }));
+  const particles = new THREE.Points(pGeo, pMat);
+  scene.add(particles);
+
+  /* ── selectable portals ── */
   type Portal = {
     key: GateKey;
     group: THREE.Group;
     ring: THREE.Mesh;
-    ringMat: THREE.MeshBasicMaterial;
-    glowMat: THREE.MeshBasicMaterial;
-    labelMat: THREE.MeshBasicMaterial;
+    ring2: THREE.Mesh;
+    discMat: THREE.Material & { opacity: number };
+    glowDiscMat: THREE.Material & { opacity: number };
+    beamMat: THREE.Material & { opacity: number };
+    glowMat: THREE.Material & { opacity: number };
+    labelMat: THREE.Material & { opacity: number };
     hit: THREE.Mesh;
-    baseX: number;
     color: THREE.Color;
-    hoverT: number; // 0..1
+    hoverT: number;
   };
   const portals: Portal[] = [];
-  const disposables: Array<{ dispose(): void }> = [];
+  const px = isMobile ? 2.5 : 3.6;
 
-  (Object.keys(PORTAL_DEF) as GateKey[]).forEach(key => {
+  (Object.keys(PORTAL_DEF) as GateKey[]).forEach((key, idx) => {
     const def = PORTAL_DEF[key];
     const color = new THREE.Color(def.color);
     const group = new THREE.Group();
-    group.position.set(def.x, 0, -1.5);
+    group.position.set(idx === 0 ? -px : px, 0, -2);
+
+    // floor reflection glow
+    const floorGlowGeo = track(new THREE.CircleGeometry(2.4, 40));
+    const floorGlowMat = track(new THREE.MeshBasicMaterial({
+      color, transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending, depthWrite: false,
+    })) as THREE.MeshBasicMaterial;
+    const floorGlow = new THREE.Mesh(floorGlowGeo, floorGlowMat);
+    floorGlow.rotation.x = -Math.PI / 2;
+    floorGlow.position.y = -2.38;
+    group.add(floorGlow);
+
+    // vertical light beam
+    const beamGeo = track(new THREE.CylinderGeometry(0.06, 0.4, 8, 16, 1, true));
+    const beamMat = track(new THREE.MeshBasicMaterial({
+      color, transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false,
+    })) as THREE.MeshBasicMaterial;
+    const beam = new THREE.Mesh(beamGeo, beamMat);
+    beam.position.y = -0.4;
+    group.add(beam);
 
     // outer glow disc
-    const glowGeo = new THREE.CircleGeometry(2.0, 48);
-    const glowMat = new THREE.MeshBasicMaterial({
-      color, transparent: true, opacity: 0.08, blending: THREE.AdditiveBlending, depthWrite: false,
-    });
+    const glowGeo = track(new THREE.CircleGeometry(2.2, 48));
+    const glowMat = track(new THREE.MeshBasicMaterial({
+      color, transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending, depthWrite: false,
+    })) as THREE.MeshBasicMaterial;
     const glow = new THREE.Mesh(glowGeo, glowMat);
+    glow.position.z = -0.05;
     group.add(glow);
 
-    // ring
-    const ringGeo = new THREE.TorusGeometry(1.55, 0.045, 10, 96);
-    const ringMat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.0 });
+    // two rings
+    const ringGeo = track(new THREE.TorusGeometry(1.65, 0.05, 12, 110));
+    const ringMat = track(new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.0 })) as THREE.MeshBasicMaterial;
     const ring = new THREE.Mesh(ringGeo, ringMat);
     group.add(ring);
 
-    // inner faint disc
-    const discGeo = new THREE.CircleGeometry(1.5, 48);
-    const discMat = new THREE.MeshBasicMaterial({
-      color, transparent: true, opacity: 0.05, blending: THREE.AdditiveBlending, depthWrite: false,
-    });
+    const ring2Geo = track(new THREE.TorusGeometry(1.9, 0.015, 8, 110));
+    const ring2Mat = track(new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.0 })) as THREE.MeshBasicMaterial;
+    const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
+    group.add(ring2);
+
+    // inner disc
+    const discGeo = track(new THREE.CircleGeometry(1.6, 48));
+    const discMat = track(new THREE.MeshBasicMaterial({
+      color, transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending, depthWrite: false,
+    })) as THREE.MeshBasicMaterial;
     const disc = new THREE.Mesh(discGeo, discMat);
-    disc.position.z = -0.02;
+    disc.position.z = -0.03;
     group.add(disc);
 
     // label
-    const labelTex = makeLabelTexture(def.title, def.sub, def.color);
-    const labelGeo = new THREE.PlaneGeometry(2.6, 1.3);
-    const labelMat = new THREE.MeshBasicMaterial({ map: labelTex, transparent: true, opacity: 0.0, depthWrite: false });
+    const labelTex = track(makeLabelTexture(def.title, def.sub, def.color));
+    const labelGeo = track(new THREE.PlaneGeometry(2.7, 1.35));
+    const labelMat = track(new THREE.MeshBasicMaterial({ map: labelTex, transparent: true, opacity: 0.0, depthWrite: false })) as THREE.MeshBasicMaterial;
     const label = new THREE.Mesh(labelGeo, labelMat);
-    label.position.z = 0.02;
+    label.position.z = 0.03;
     group.add(label);
 
-    // invisible hit area (bigger for easy hover/click)
-    const hitGeo = new THREE.CircleGeometry(1.9, 24);
-    const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+    // hit area
+    const hitGeo = track(new THREE.CircleGeometry(2.0, 24));
+    const hitMat = track(new THREE.MeshBasicMaterial({ visible: false }));
     const hit = new THREE.Mesh(hitGeo, hitMat);
     hit.userData.key = key;
     group.add(hit);
 
-    group.scale.setScalar(0.0001); // hidden until ready
+    group.scale.setScalar(0.0001);
     scene.add(group);
-
-    portals.push({ key, group, ring, ringMat, glowMat, labelMat, hit, baseX: def.x, color, hoverT: 0 });
-    disposables.push(glowGeo, glowMat, ringGeo, ringMat, discGeo, discMat, labelGeo, labelMat, labelTex, hitGeo, hitMat);
+    portals.push({ key, group, ring, ring2, discMat, glowDiscMat: glowMat, beamMat, glowMat: floorGlowMat, labelMat, hit, color, hoverT: 0 });
   });
 
-  const st = { speed: 1.2, target: 1.2, mx: 0, my: 0, ready: 0, targetReady: 0 };
+  const st = { mx: 0, my: 0, ready: 0, targetReady: 0, warp: 0, targetWarp: 0, auto: 0 };
   let mood: GateMood = 'idle';
   let hovered: GateKey | null = null;
+  let pointerActive = false;
   const clock = new THREE.Clock();
   let raf = 0;
 
@@ -213,8 +205,9 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
     const key = (hits[0]?.object.userData.key as GateKey | undefined) ?? null;
     if (key !== hovered) {
       hovered = key;
+      mood = key ?? 'idle';
       opts.onHover?.(key);
-      canvas.style.cursor = key ? 'pointer' : 'default';
+      canvas.style.cursor = key ? 'pointer' : 'grab';
     }
   };
 
@@ -223,43 +216,59 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
     const dt = Math.min(clock.getDelta(), 0.05);
     const t = clock.elapsedTime;
 
-    st.speed += (st.target - st.speed) * 0.045;
     st.ready += (st.targetReady - st.ready) * 0.06;
-    mat.uniforms.uTime.value = t;
-    mat.uniforms.uSpeed.value = st.speed;
+    st.warp += (st.targetWarp - st.warp) * 0.06;
 
     tA.set(MOODS[mood][0]);
     colorA.lerp(tA, 0.06);
     tA.set(MOODS[mood][1]);
     colorB.lerp(tA, 0.06);
 
-    // portals
+    // idle auto-sway when the user isn't steering
+    if (!pointerActive) st.auto += dt * 0.25;
+    const ax = pointerActive ? st.mx : Math.sin(st.auto) * 0.35;
+    const ay = pointerActive ? st.my : Math.sin(st.auto * 0.7) * 0.12;
+
+    // particles drift
+    particles.rotation.y += dt * 0.01;
+    particles.position.z = (particles.position.z + dt * (0.6 + st.warp * 8)) % 12;
+
     portals.forEach((p, i) => {
       const isHover = hovered === p.key;
       p.hoverT += ((isHover ? 1 : 0) - p.hoverT) * 0.12;
-      const vis = st.ready;
-      const bob = Math.sin(t * 1.1 + i * 1.7) * 0.12;
-      const s = vis * (1 + p.hoverT * 0.14);
-      p.group.scale.setScalar(Math.max(0.0001, s));
-      p.group.position.y = bob + p.hoverT * 0.15;
-      p.group.position.z = -1.5 + p.hoverT * 0.6;
-      p.ring.rotation.z += dt * (0.2 + p.hoverT * 0.8) * (i ? -1 : 1);
-      p.ringMat.opacity = vis * (0.55 + p.hoverT * 0.45);
-      p.glowMat.opacity = vis * (0.08 + p.hoverT * 0.22);
+      const vis = st.ready * (1 - st.warp);
+      const bob = Math.sin(t * 1.0 + i * 1.7) * 0.1;
+      p.group.scale.setScalar(Math.max(0.0001, vis * (1 + p.hoverT * 0.12)));
+      p.group.position.y = bob + p.hoverT * 0.12;
+      p.group.position.z = -2 + p.hoverT * 0.7 - st.warp * 10;
+      p.ring.rotation.z += dt * (0.25 + p.hoverT * 0.9) * (i ? -1 : 1);
+      p.ring2.rotation.z -= dt * (0.15 + p.hoverT * 0.6) * (i ? -1 : 1);
+      (p.ring.material as THREE.Material & { opacity: number }).opacity = vis * (0.6 + p.hoverT * 0.4);
+      (p.ring2.material as THREE.Material & { opacity: number }).opacity = vis * (0.3 + p.hoverT * 0.5);
       p.labelMat.opacity = vis;
+      p.glowMat.opacity = vis * (0.1 + p.hoverT * 0.3);
+      p.beamMat.opacity = vis * (0.06 + p.hoverT * 0.22);
+      p.discMat.opacity = vis * (0.05 + p.hoverT * 0.14);
+      p.glowDiscMat.opacity = vis * (0.05 + p.hoverT * 0.18);
     });
 
-    // camera "look around" orbit from pointer
-    const yaw = st.mx * 0.42;
-    const pitch = st.my * 0.26;
-    const rad = 7;
-    camera.position.x += (Math.sin(yaw) * rad - camera.position.x) * 0.06;
-    camera.position.z += (Math.cos(yaw) * rad - camera.position.z) * 0.06;
-    camera.position.y += (pitch * 2.2 - camera.position.y) * 0.06;
-    camera.lookAt(0, 0, -1.5);
-
-    camera.fov = 68 + Math.min(st.speed, 80) * 0.7;
+    // camera orbit (look around the hall)
+    const yaw = ax * 0.4;
+    const pitch = ay * 0.22;
+    const rad = isMobile ? 8.4 : 8;
+    const tx = Math.sin(yaw) * rad;
+    const tz = Math.cos(yaw) * rad - st.warp * 9;
+    camera.position.x += (tx - camera.position.x) * 0.06;
+    camera.position.z += (tz - camera.position.z) * 0.06;
+    camera.position.y += (0.4 + pitch * 2.2 - camera.position.y) * 0.06;
+    camera.lookAt(0, 0, -2);
+    camera.fov = (isMobile ? 74 : 66) + st.warp * 40;
     camera.updateProjectionMatrix();
+
+    // fade the hall out during warp
+    const hallOp = 1 - st.warp;
+    (floor.material as THREE.Material & { opacity: number }).opacity = 0.22 * hallOp;
+    (ceiling.material as THREE.Material & { opacity: number }).opacity = 0.12 * hallOp;
 
     updateHover();
     renderer.render(scene, camera);
@@ -272,52 +281,40 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
     camera.updateProjectionMatrix();
   };
   const onMove = (e: PointerEvent) => {
+    pointerActive = true;
     st.mx = (e.clientX / window.innerWidth - 0.5) * 2;
     st.my = -(e.clientY / window.innerHeight - 0.5) * 2;
     ndc.x = (e.clientX / window.innerWidth) * 2 - 1;
     ndc.y = -(e.clientY / window.innerHeight) * 2 + 1;
   };
-  const onClick = () => {
-    if (hovered) opts.onSelect?.(hovered);
-  };
+  const onLeave = () => { pointerActive = false; };
+  const onClick = () => { if (hovered) opts.onSelect?.(hovered); };
   window.addEventListener('resize', onResize);
-  window.addEventListener('pointermove', onMove);
+  window.addEventListener('pointermove', onMove, { passive: true });
+  window.addEventListener('pointerleave', onLeave);
   canvas.addEventListener('click', onClick);
+  canvas.style.cursor = 'grab';
 
   return {
-    setMood(m: GateMood) {
-      mood = m;
-      st.target = m === 'idle' ? 1.2 : 3.2;
-    },
-    /** Reveal the selectable portals once the boot sequence finishes. */
-    setReady(v: boolean) {
-      st.targetReady = v ? 1 : 0;
-    },
+    setMood(m: GateMood) { mood = m; },
+    setReady(v: boolean) { st.targetReady = v ? 1 : 0; },
     hoverPortal(k: GateKey | null) {
-      // allow external (button) hover to drive the scene highlight
-      if (k) {
-        hovered = k;
-        mood = k;
-      } else if (hovered) {
-        hovered = null;
-        mood = 'idle';
-      }
+      hovered = k;
+      mood = k ?? 'idle';
+      opts.onHover?.(k);
     },
-    warp() {
-      st.target = 150;
-      st.targetReady = 0;
-    },
+    warp() { st.targetWarp = 1; st.targetReady = 0; },
     dispose() {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerleave', onLeave);
       canvas.removeEventListener('click', onClick);
       scene.traverse(o => {
         const m = o as THREE.Mesh;
         m.geometry?.dispose?.();
       });
       disposables.forEach(d => d.dispose());
-      mat.dispose();
       renderer.dispose();
     },
   };
