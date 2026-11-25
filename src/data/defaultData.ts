@@ -179,7 +179,7 @@ export const initialDataEN: PortfolioData = {
       github: 'https://github.com/yasinkamis',
       linkedin: 'https://www.linkedin.com/in/yasinkamis',
     },
-    availability: 'Open to work · On-site, Hybrid & Remote',
+    availability: 'On-site · Hybrid · Remote',
     responseTime: 'Usually responds within 24 hours',
   },
 };
@@ -328,7 +328,7 @@ export const initialDataTR: PortfolioData = {
       github: 'https://github.com/yasinkamis',
       linkedin: 'https://www.linkedin.com/in/yasinkamis',
     },
-    availability: 'Çalışmaya açık · İş yerinde, Hibrit ve Uzaktan',
+    availability: 'İş yerinde · Hibrit · Uzaktan',
     responseTime: 'Genellikle 24 saat içinde yanıt verir',
   },
 };
