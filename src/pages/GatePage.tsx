@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-type GateSceneApi = Awaited<ReturnType<typeof import('../three/GateScene')['createGateScene']>> | { setMood: (m: 'idle' | 'terminal' | 'classic') => void; warp: () => void; dispose: () => void };
+import type { GateKey } from '../three/GateScene';
+type GateSceneApi = Awaited<ReturnType<typeof import('../three/GateScene')['createGateScene']>>;
 import './GatePage.css';
 
 type Lang = 'en' | 'tr';
@@ -17,17 +18,19 @@ const TIMINGS = [200, 750, 1350, 1950];
 const COPY = {
   en: {
     sectionLabel: 'ACCESS LEVEL DETECTION',
-    question: 'Do you know how to use a terminal?',
-    yes: 'YES',
-    no: 'NO',
+    question: 'Choose your gate',
+    hint: 'Move your mouse to look around · click a gate to enter',
+    yes: 'TERMINAL',
+    no: 'CLASSIC',
     yesMode: '→ Terminal Mode',
     noMode: '→ Classic Mode',
   },
   tr: {
     sectionLabel: 'ERİŞİM SEVİYESİ TESPİTİ',
-    question: 'Terminal kullanmayı biliyor musun?',
-    yes: 'EVET',
-    no: 'HAYIR',
+    question: 'Kapını seç',
+    hint: 'Etrafına bakmak için fareni oynat · girmek için bir kapıya tıkla',
+    yes: 'TERMINAL',
+    no: 'CLASSIC',
     yesMode: '→ Terminal Modu',
     noMode: '→ Klasik Mod',
   },
@@ -45,6 +48,18 @@ export default function GatePage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef<GateSceneApi | null>(null);
 
+  // keep latest state available to the (once-created) scene callbacks
+  const showQuestionRef = useRef(false);
+  const choiceRef = useRef<(k: GateKey) => void>(() => {});
+
+  const handleChoice = (path: string) => {
+    if (leaving) return;
+    setLeaving(true);
+    sceneRef.current?.warp();
+    setTimeout(() => navigate(path), 900);
+  };
+  choiceRef.current = (k: GateKey) => handleChoice(k === 'terminal' ? '/terminal' : '/classic');
+
   useEffect(() => {
     if (!canvasRef.current) return;
     let cancelled = false;
@@ -53,10 +68,19 @@ export default function GatePage() {
     import('../three/GateScene').then(({ createGateScene }) => {
       if (cancelled) return;
       try {
-        const sc = createGateScene(canvas);
+        const sc = createGateScene(canvas, {
+          onHover: k => {
+            sc.setMood(k ?? 'idle');
+            if (k === 'classic') void import('./ClassicSite');
+          },
+          onSelect: k => choiceRef.current(k),
+        });
         sceneRef.current = sc;
         disposeFn = sc.dispose;
-      } catch { canvas.style.display = 'none'; }
+        if (showQuestionRef.current) sc.setReady(true);
+      } catch {
+        canvas.style.display = 'none';
+      }
     });
     return () => { cancelled = true; disposeFn?.(); sceneRef.current = null; };
   }, []);
@@ -84,11 +108,11 @@ export default function GatePage() {
     return () => timers.forEach(clearTimeout);
   }, []);
 
-  const handleChoice = (path: string) => {
-    setLeaving(true);
-    sceneRef.current?.warp();
-    setTimeout(() => navigate(path), 900);
-  };
+  // reveal the 3D portals once the boot sequence finishes
+  useEffect(() => {
+    showQuestionRef.current = showQuestion;
+    if (showQuestion) sceneRef.current?.setReady(true);
+  }, [showQuestion]);
 
   return (
     <div className={`gate-page ${leaving ? 'gate-leaving' : ''}`}>
@@ -103,7 +127,8 @@ export default function GatePage() {
         {lang === 'en' ? 'TR' : 'EN'}
       </button>
 
-      <div className="gate-window">
+      {/* Boot window — fades out once the gates appear */}
+      <div className={`gate-window ${showQuestion ? 'gate-window-dismiss' : ''}`}>
         <div className="gate-window-header">
           <div className="gate-window-dots">
             <span className="gwdot gwdot-red" />
@@ -127,45 +152,46 @@ export default function GatePage() {
                 )}
               </div>
             ))}
-            {!showQuestion && visibleCount < BOOT_LINES.length && (
-              <span className="gate-cursor-blink">▋</span>
-            )}
+            {visibleCount < BOOT_LINES.length && <span className="gate-cursor-blink">▋</span>}
           </div>
-
-          {showQuestion && (
-            <div className="gate-question-area">
-              <div className="gate-separator">
-                <span className="gate-separator-label">{c.sectionLabel}</span>
-              </div>
-
-              <div className="gate-question-block">
-                <p className="gq-main">{c.question}</p>
-              </div>
-
-              <div className="gate-choice-row">
-                <button
-                  className="gate-choice-btn gate-choice-yes"
-                  onClick={() => handleChoice('/terminal')}
-                  onMouseEnter={() => sceneRef.current?.setMood('terminal')}
-                  onMouseLeave={() => sceneRef.current?.setMood('idle')}
-                >
-                  <span className="gcb-main">{c.yes}</span>
-                  <span className="gcb-sub">{c.yesMode}</span>
-                </button>
-                <button
-                  className="gate-choice-btn gate-choice-no"
-                  onClick={() => handleChoice('/classic')}
-                  onMouseEnter={() => { sceneRef.current?.setMood('classic'); void import('./ClassicSite'); }}
-                  onMouseLeave={() => sceneRef.current?.setMood('idle')}
-                >
-                  <span className="gcb-main">{c.no}</span>
-                  <span className="gcb-sub">{c.noMode}</span>
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
+
+      {/* 3D gate selection HUD */}
+      {showQuestion && (
+        <div className="gate-hud">
+          <div className="gate-hud-top">
+            <span className="gate-separator-label">{c.sectionLabel}</span>
+            <h1 className="gate-hud-title">{c.question}</h1>
+          </div>
+
+          <div className="gate-hud-bottom">
+            <p className="gate-hud-hint">{c.hint}</p>
+
+            {/* accessible / mobile fallback buttons — mirror the 3D gates */}
+            <div className="gate-choice-row">
+              <button
+                className="gate-choice-btn gate-choice-yes"
+                onClick={() => handleChoice('/terminal')}
+                onMouseEnter={() => sceneRef.current?.hoverPortal('terminal')}
+                onMouseLeave={() => sceneRef.current?.hoverPortal(null)}
+              >
+                <span className="gcb-main">{c.yes}</span>
+                <span className="gcb-sub">{c.yesMode}</span>
+              </button>
+              <button
+                className="gate-choice-btn gate-choice-no"
+                onClick={() => handleChoice('/classic')}
+                onMouseEnter={() => { sceneRef.current?.hoverPortal('classic'); void import('./ClassicSite'); }}
+                onMouseLeave={() => sceneRef.current?.hoverPortal(null)}
+              >
+                <span className="gcb-main">{c.no}</span>
+                <span className="gcb-sub">{c.noMode}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
