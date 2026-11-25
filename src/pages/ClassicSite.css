@@ -379,8 +379,8 @@ html.lenis, html.lenis body { height: auto; }
   .cs-section { padding: 6rem 0; }
   .cs-about-grid, .cs-skills-grid { grid-template-columns: 1fr; }
   /* mobile: full-height hero, content clears the fixed nav, roomy rhythm */
-  .cs-hero { min-height: 100svh; align-items: flex-start; }
-  .cs-hero-content { padding: 7.5rem 1.4rem 4rem; }
+  .cs-hero { min-height: 100svh; align-items: center; }
+  .cs-hero-content { padding: 6rem 1.4rem 3rem; }
   .cs-hero-greeting { margin-bottom: 1.2rem; font-size: 0.82rem; }
   .cs-hero-name { margin-bottom: 1.4rem; line-height: 1.07; }
   .cs-hero-title-row { margin-bottom: 1.6rem; }
