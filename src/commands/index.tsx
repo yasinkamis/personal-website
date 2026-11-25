@@ -1,5 +1,5 @@
-import type { Command } from '../types';
-import { addMessage, getMessages, markMessageAsRead, deleteMessage, getStats } from '../services/dataService';
+import type { Command, TerminalTheme } from '../types';
+import { addMessage, getMessages, markMessageAsRead, deleteMessage, getStats, getGuestbookEntries, addGuestbookEntry } from '../services/dataService';
 import Icon from '../components/Icon';
 
 // ASCII Art for neofetch
@@ -61,6 +61,8 @@ export const commands: Record<string, Command> = {
         { cmd: 'message', desc: ctx.t('messageDesc') + ' --name "Name" --email "Email" --subject "Subject" --body "Message"' },
         { cmd: 'clear', desc: ctx.t('clearDesc') },
         { cmd: 'lang', desc: ctx.t('langDesc') },
+        { cmd: 'theme', desc: ctx.t('themeDesc') },
+        { cmd: 'guestbook', desc: ctx.t('guestbookDesc') },
         { cmd: 'su', desc: ctx.t('suDesc') },
       ];
 
@@ -99,7 +101,7 @@ export const commands: Record<string, Command> = {
               <div className="commands-grid">
                 {regularCommands.map(({ cmd, desc }) => (
                   <div key={cmd} className="command-item">
-                    <span className="cmd-name">{cmd}</span>
+                    <button type="button" className="cmd-name" onClick={() => ctx.runCommand(cmd)}>{cmd}</button>
                     <span className="cmd-desc">{desc}</span>
                   </div>
                 ))}
@@ -110,7 +112,7 @@ export const commands: Record<string, Command> = {
               <div className="commands-grid">
                 {funCommands.map(({ cmd, desc }) => (
                   <div key={cmd} className="command-item">
-                    <span className="cmd-name">{cmd}</span>
+                    <button type="button" className="cmd-name" onClick={() => ctx.runCommand(cmd)}>{cmd}</button>
                     <span className="cmd-desc">{desc}</span>
                   </div>
                 ))}
@@ -122,7 +124,7 @@ export const commands: Record<string, Command> = {
                 <div className="commands-grid">
                   {adminCommands.map(({ cmd, desc }) => (
                     <div key={cmd} className="command-item">
-                      <span className="cmd-name">{cmd}</span>
+                      <button type="button" className="cmd-name" onClick={() => ctx.runCommand(cmd)}>{cmd}</button>
                       <span className="cmd-desc">{desc}</span>
                     </div>
                   ))}
@@ -532,20 +534,149 @@ export const commands: Record<string, Command> = {
   history: {
     name: 'history',
     description: 'historyDesc',
-    execute: () => {
+    execute: (_args, ctx) => {
+      // ctx.commandHistory is captured just before the current `history` command
+      // is appended, so it already holds exactly the previous commands.
+      const items = ctx.commandHistory;
+      if (items.length === 0) {
+        return { output: <div className="history-output"><p>{ctx.t('historyEmpty')}</p></div> };
+      }
       return {
         output: (
           <div className="history-output">
-            <p>1  help</p>
-            <p>2  about</p>
-            <p>3  skills</p>
-            <p>4  neofetch</p>
-            <p>5  cowsay "Hire me!"</p>
-            <p>6  fortune</p>
-            <p>7  coffee</p>
-            <p>8  history</p>
+            {items.map((cmd, i) => (
+              <p key={i}>
+                <span className="history-index">{String(i + 1).padStart(3, ' ')}</span>
+                <button
+                  type="button"
+                  className="history-cmd"
+                  onClick={() => ctx.runCommand(cmd)}
+                >
+                  {cmd}
+                </button>
+              </p>
+            ))}
           </div>
         ),
+      };
+    },
+  },
+
+  theme: {
+    name: 'theme',
+    description: 'themeDesc',
+    usage: 'theme <dark|matrix|dracula|light>',
+    execute: (args, ctx) => {
+      const themes: TerminalTheme[] = ['dark', 'matrix', 'dracula', 'light'];
+      const choice = args[0]?.toLowerCase() as TerminalTheme | undefined;
+
+      if (!choice) {
+        return {
+          output: (
+            <div className="theme-output">
+              <p className="theme-current">{ctx.t('themeCurrent')}: <strong>{ctx.theme}</strong></p>
+              <div className="theme-list">
+                {themes.map(th => (
+                  <button
+                    key={th}
+                    type="button"
+                    className={`theme-chip theme-chip-${th}${th === ctx.theme ? ' active' : ''}`}
+                    onClick={() => { ctx.setTheme(th); ctx.runCommand(`theme ${th}`); }}
+                  >
+                    <span className="theme-chip-dot" />
+                    {th}
+                  </button>
+                ))}
+              </div>
+              <p className="theme-hint">{ctx.t('themeUsage')}</p>
+            </div>
+          ),
+        };
+      }
+
+      if (!themes.includes(choice)) {
+        return {
+          output: `${ctx.t('themeInvalid')}: ${args[0]} — ${themes.join(', ')}`,
+          isError: true,
+        };
+      }
+
+      ctx.setTheme(choice);
+      return {
+        output: (
+          <div className="theme-output">
+            <p className="theme-applied">
+              <Icon name="check" /> {ctx.t('themeApplied')}: <strong>{choice}</strong>
+            </p>
+          </div>
+        ),
+      };
+    },
+  },
+
+  guestbook: {
+    name: 'guestbook',
+    description: 'guestbookDesc',
+    usage: 'guestbook --name "Name" --msg "Message"',
+    execute: async (args, ctx) => {
+      const argString = args.join(' ');
+
+      // No args → show recent entries.
+      if (!argString.trim()) {
+        const entries = await getGuestbookEntries();
+        return {
+          output: (
+            <div className="guestbook-output">
+              <h3><Icon name="chat" /> {ctx.t('guestbookTitle')}</h3>
+              {entries.length === 0 ? (
+                <p className="guestbook-empty">{ctx.t('guestbookEmpty')}</p>
+              ) : (
+                <div className="guestbook-list">
+                  {entries.map(entry => (
+                    <div key={entry.id} className="guestbook-item">
+                      <div className="guestbook-head">
+                        <span className="guestbook-name">{entry.name}</span>
+                        <span className="guestbook-date">{entry.date}</span>
+                      </div>
+                      <p className="guestbook-msg">{entry.message}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <p className="guestbook-hint">{ctx.t('guestbookUsage')}</p>
+            </div>
+          ),
+        };
+      }
+
+      const nameMatch = argString.match(/--name\s+"([^"]+)"|--name\s+(\S+)/);
+      const msgMatch = argString.match(/--msg\s+"([^"]+)"|--msg\s+(\S+)/);
+      const name = (nameMatch?.[1] || nameMatch?.[2] || '').trim();
+      const message = (msgMatch?.[1] || msgMatch?.[2] || '').trim();
+
+      if (!name || !message) {
+        return {
+          output: (
+            <div className="message-usage">
+              <p className="error">{ctx.t('guestbookNeedFields')}</p>
+              <p className="example">guestbook --name "Ada" --msg "Great terminal!"</p>
+            </div>
+          ),
+          isError: true,
+        };
+      }
+
+      const ok = await addGuestbookEntry(name, message);
+      return {
+        output: ok ? (
+          <div className="message-success">
+            <p><Icon name="check" /> {ctx.t('guestbookThanks')}</p>
+            <div className="message-details">{ctx.t('guestbookSignedAs')}: {name}</div>
+          </div>
+        ) : (
+          <div className="message-usage"><p className="error">{ctx.t('guestbookError')}</p></div>
+        ),
+        isError: !ok,
       };
     },
   },

@@ -9,6 +9,7 @@ import {
   addDoc,
   query,
   orderBy,
+  limit,
   Timestamp,
 } from 'firebase/firestore';
 import { db } from './firebase';
@@ -19,6 +20,7 @@ const COLLECTIONS = {
   DATA: 'portfolioData',
   MESSAGES: 'messages',
   TRANSLATIONS: 'translations',
+  GUESTBOOK: 'guestbook',
 };
 
 // Get portfolio data
@@ -248,6 +250,52 @@ export const deleteMessage = async (id: string): Promise<boolean> => {
     return true;
   } catch (error) {
     console.error('Error deleting message:', error);
+    return false;
+  }
+};
+
+// Guestbook — public visitor entries (write + read)
+export interface GuestbookEntry {
+  id: string;
+  name: string;
+  message: string;
+  date: string;
+}
+
+export const getGuestbookEntries = async (): Promise<GuestbookEntry[]> => {
+  try {
+    const q = query(
+      collection(db, COLLECTIONS.GUESTBOOK),
+      orderBy('createdAt', 'desc'),
+      limit(25),
+    );
+    const snap = await getDocs(q);
+    return snap.docs.map(d => {
+      const data = d.data();
+      const created: Date = data.createdAt?.toDate?.() || new Date();
+      return {
+        id: d.id,
+        name: String(data.name || 'Anonymous').slice(0, 60),
+        message: String(data.message || '').slice(0, 280),
+        date: created.toLocaleDateString(),
+      };
+    });
+  } catch (error) {
+    console.error('Error getting guestbook entries:', error);
+    return [];
+  }
+};
+
+export const addGuestbookEntry = async (name: string, message: string): Promise<boolean> => {
+  try {
+    await addDoc(collection(db, COLLECTIONS.GUESTBOOK), {
+      name: name.slice(0, 60),
+      message: message.slice(0, 280),
+      createdAt: Timestamp.now(),
+    });
+    return true;
+  } catch (error) {
+    console.error('Error adding guestbook entry:', error);
     return false;
   }
 };

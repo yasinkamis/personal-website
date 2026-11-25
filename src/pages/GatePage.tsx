@@ -53,6 +53,7 @@ export default function GatePage() {
   const sceneRef = useRef<GateSceneApi | null>(null);
 
   const isTouch = useRef(typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches);
+  const reduced = useRef(typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const showQuestionRef = useRef(false);
   const choiceRef = useRef<(k: GateKey) => void>(() => {});
   const langRef = useRef<Lang>(lang);
@@ -61,6 +62,11 @@ export default function GatePage() {
   const handleChoice = (path: string) => {
     if (leaving) return;
     setLeaving(true);
+    // Reduced motion: skip the 3D warp transition and navigate promptly.
+    if (reduced.current) {
+      setTimeout(() => navigate(path), 120);
+      return;
+    }
     sceneRef.current?.warp();
     setTimeout(() => navigate(path), 900);
   };
@@ -99,6 +105,12 @@ export default function GatePage() {
   };
 
   useEffect(() => {
+    // Reduced motion: skip the typed boot sequence, show the hall immediately.
+    if (reduced.current) {
+      setVisibleCount(BOOT_LINES.length);
+      setShowQuestion(true);
+      return;
+    }
     const timers: ReturnType<typeof setTimeout>[] = [];
     TIMINGS.forEach((delay, i) => {
       timers.push(

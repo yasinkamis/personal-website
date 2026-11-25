@@ -13,6 +13,8 @@ export interface Command {
   execute: (args: string[], context: CommandContext) => CommandResult | Promise<CommandResult>;
 }
 
+export type TerminalTheme = 'dark' | 'matrix' | 'dracula' | 'light';
+
 export interface CommandContext {
   setIsAuthenticated: (value: boolean) => void;
   isAuthenticated: boolean;
@@ -25,6 +27,13 @@ export interface CommandContext {
   data: PortfolioData | null;
   setData: (data: PortfolioData) => void;
   refreshData: () => Promise<void>;
+  /** Full list of commands the visitor has run this session. */
+  commandHistory: string[];
+  /** Programmatically run a command (used by clickable help entries). */
+  runCommand: (cmd: string) => void;
+  /** Active terminal color theme + setter. */
+  theme: TerminalTheme;
+  setTheme: (theme: TerminalTheme) => void;
 }
 
 export interface TerminalOutput {

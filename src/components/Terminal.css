@@ -1,10 +1,43 @@
+/* ============================================================
+   Page lock — while the terminal is on screen the document itself
+   never scrolls. The terminal body is the ONE and ONLY scroll
+   region, which kills the "double scroll" on mobile and stops iOS
+   from rubber-banding the whole page behind the terminal.
+   ============================================================ */
+html.terminal-active,
+body.terminal-active {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body.terminal-active {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+}
+
+/* The terminal screen fills the real visible viewport. --tvh is kept in
+   sync with window.visualViewport by the Terminal component, so the layout
+   shrinks to the space left above the mobile keyboard instead of hiding the
+   input behind it. It falls back to dynamic vh, then plain vh. */
+.app.app--terminal {
+  min-height: 0;
+  height: 100vh;
+  height: 100dvh;
+  height: var(--tvh, 100dvh);
+  padding: 20px;
+  align-items: center;
+  overflow: hidden;
+}
+
 /* Terminal Container */
 .terminal-container {
   width: 100%;
   max-width: 1200px;
-  height: 90vh;
+  height: 100%;
   max-height: 800px;
-  margin: 20px auto;
+  margin: 0 auto;
   background: #0d1117;
   border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
@@ -13,10 +46,10 @@
   flex-direction: column;
   font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
   overflow: hidden;
-  overflow-x: hidden;
+  min-height: 0;
 }
 
-/* Terminal Header */
+/* Terminal Header — stays pinned above the scrolling body */
 .terminal-header {
   display: flex;
   align-items: center;
@@ -25,6 +58,9 @@
   background: linear-gradient(180deg, #2d333b 0%, #22272e 100%);
   border-bottom: 1px solid #373e47;
   user-select: none;
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 3;
 }
 
 .terminal-buttons {
@@ -115,15 +151,18 @@
   line-height: 1;
 }
 
-/* Terminal Body */
+/* Terminal Body — the single scroll region of the whole screen */
 .terminal-body {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 16px;
   background: #0d1117;
   scroll-behavior: smooth;
   max-width: 100%;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .terminal-body::-webkit-scrollbar {
@@ -221,47 +260,98 @@
   gap: 8px;
   font-size: 14px;
   position: relative;
+  padding-top: 2px;
+}
+
+/* Wrap holds the real input; the resting block cursor overlays its start */
+.input-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
 }
 
 .terminal-input {
-  flex: 1;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
   background: transparent;
   border: none;
   outline: none;
   color: #f0f6fc;
   font-family: inherit;
   font-size: 16px; /* 16px prevents iOS auto-zoom on focus */
+  line-height: 1.6;
+  padding: 0;
+  margin: 0;
+  /* Accent caret while typing — always perfectly aligned with the text */
   caret-color: #58a6ff;
 }
 
-.cursor {
-  display: inline-block;
-  width: 8px;
-  height: 18px;
-  background: #58a6ff;
-  animation: blink 1s step-end infinite;
-  margin-left: -8px;
-  opacity: 0;
+.terminal-input::selection {
+  background: rgba(88, 166, 255, 0.35);
 }
 
-.terminal-input:focus + .cursor {
+/* Hide the thin native caret only while the field is empty, so the fat resting
+   block below is the single cursor shown at rest (no double cursor). */
+.input-line.is-empty .terminal-input {
+  caret-color: transparent;
+}
+
+/* Resting block cursor — a classic terminal block that blinks when the prompt
+   is empty and focused. Positioned at the very start of the input. */
+.rest-cursor {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 9px;
+  height: 1.05em;
+  background: #58a6ff;
+  border-radius: 2px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.input-line.is-focused.is-empty .rest-cursor {
   opacity: 1;
+  animation: blink 1.06s step-end infinite;
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
 }
 
-/* Terminal Footer */
+@media (prefers-reduced-motion: reduce) {
+  .input-line.is-focused.is-empty .rest-cursor {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Terminal Footer — pinned below the scrolling body */
 .terminal-footer {
   display: flex;
   justify-content: space-between;
+  gap: 12px;
   padding: 8px 16px;
   background: #161b22;
   border-top: 1px solid #21262d;
   font-size: 12px;
   color: #8b949e;
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 3;
+}
+
+.footer-stats {
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .footer-info {
@@ -515,11 +605,19 @@
   margin-bottom: 16px;
 }
 
+.education-output .edu-item + .edu-item {
+  margin-top: 16px;
+}
+
 .edu-item {
   padding: 16px;
   background: #161b22;
   border-radius: 8px;
   border-left: 3px solid #d2a8ff;
+}
+
+.edu-header {
+  margin-bottom: 8px;
 }
 
 .edu-school {
@@ -1159,12 +1257,17 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .app--terminal {
+    padding: 0;
+  }
+
   .terminal-container {
-    height: 100vh;
+    height: 100%;
     max-height: none;
     border-radius: 0;
     margin: 0;
     max-width: 100vw;
+    box-shadow: none;
   }
 
   .terminal-header {
@@ -1332,4 +1435,376 @@
 .popular-item .count {
   color: #8b949e;
   font-size: 12px;
+}
+
+/* ============================================================
+   Motion & polish — subtle, professional, reduced-motion safe
+   ============================================================ */
+
+/* Terminal boots in gently */
+.terminal-container {
+  animation: termIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes termIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.99); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Each new output/command line fades + slides in once, when mounted */
+.output-line {
+  animation: lineIn 0.24s ease both;
+}
+
+@keyframes lineIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Soft neon glow on the resting cursor and welcome art */
+.rest-cursor {
+  box-shadow: 0 0 10px rgba(88, 166, 255, 0.75);
+}
+
+.welcome-ascii {
+  text-shadow: 0 0 18px rgba(88, 166, 255, 0.45);
+  animation: asciiType 0.7s steps(24) 0.85s both,
+             asciiGlow 3.6s ease-in-out 1.6s infinite;
+}
+
+@keyframes asciiType {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes asciiGlow {
+  0%, 100% { text-shadow: 0 0 14px rgba(88, 166, 255, 0.35); }
+  50%      { text-shadow: 0 0 24px rgba(88, 166, 255, 0.65); }
+}
+
+/* Boot lines type in before the logo */
+.welcome-boot {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 440px;
+  margin: 0 auto 16px;
+  font-size: 12px;
+  color: #8b949e;
+  text-align: left;
+}
+
+.welcome-boot .wb-ok { color: #7ee787; margin-right: 8px; }
+
+.wb-line {
+  opacity: 0;
+  transform: translateX(-6px);
+  animation: bootLine 0.35s ease forwards;
+}
+
+.wb-1 { animation-delay: 0.10s; }
+.wb-2 { animation-delay: 0.35s; }
+.wb-3 { animation-delay: 0.60s; }
+
+@keyframes bootLine {
+  to { opacity: 1; transform: none; }
+}
+
+.welcome-text,
+.welcome-hint,
+.welcome-version {
+  opacity: 0;
+  animation: lineIn 0.4s ease forwards;
+}
+
+.welcome-text {
+  text-shadow: 0 0 14px rgba(126, 231, 135, 0.35);
+  animation-delay: 1.55s;
+}
+.welcome-hint { animation-delay: 1.70s; }
+.welcome-version { animation-delay: 1.85s; }
+
+/* Prompt gets a faint glow so it reads as "live" terminal text */
+.prompt-user { text-shadow: 0 0 10px rgba(126, 231, 135, 0.35); }
+.prompt-host { text-shadow: 0 0 10px rgba(121, 192, 255, 0.35); }
+
+/* Window buttons glow on hover */
+.terminal-buttons span:hover { box-shadow: 0 0 8px currentColor; }
+
+@media (prefers-reduced-motion: reduce) {
+  .terminal-container,
+  .output-line,
+  .welcome-ascii,
+  .wb-line,
+  .welcome-text,
+  .welcome-hint,
+  .welcome-version {
+    animation: none;
+    clip-path: none;
+  }
+  .terminal-container,
+  .output-line,
+  .wb-line,
+  .welcome-text,
+  .welcome-hint,
+  .welcome-version {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ============================================================
+   Inline autocomplete hint
+   ============================================================ */
+.terminal-input {
+  position: relative;
+  z-index: 1;
+}
+
+.input-hint {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: pre;
+  pointer-events: none;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.6;
+  z-index: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.input-hint-typed { visibility: hidden; }
+.input-hint-suffix { color: #566070; }
+
+/* ============================================================
+   Clickable command names (help) + history
+   ============================================================ */
+button.cmd-name {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  text-align: left;
+  color: #7ee787;
+  font-weight: 600;
+  min-width: 120px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+button.cmd-name:hover,
+button.cmd-name:focus-visible {
+  color: #fff;
+  text-decoration: underline;
+  outline: none;
+}
+
+.history-output p {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  margin: 3px 0;
+}
+
+.history-index {
+  color: #484f58;
+  white-space: pre;
+  font-variant-numeric: tabular-nums;
+}
+
+.history-cmd {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: #7ee787;
+  cursor: pointer;
+}
+
+.history-cmd:hover,
+.history-cmd:focus-visible {
+  text-decoration: underline;
+  outline: none;
+}
+
+/* ============================================================
+   theme command
+   ============================================================ */
+.theme-output { padding: 6px 0; }
+
+.theme-current,
+.theme-hint { color: #8b949e; font-size: 13px; margin: 6px 0; }
+
+.theme-applied { color: #7ee787; font-size: 14px; margin: 4px 0; }
+
+.theme-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.theme-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #30363d;
+  background: #161b22;
+  color: #c9d1d9;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease, color 0.15s ease;
+}
+
+.theme-chip:hover { border-color: #58a6ff; transform: translateY(-1px); }
+.theme-chip.active { border-color: #58a6ff; color: #fff; }
+
+.theme-chip-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.theme-chip-dark .theme-chip-dot { background: #58a6ff; }
+.theme-chip-matrix .theme-chip-dot { background: #00ff41; }
+.theme-chip-dracula .theme-chip-dot { background: #bd93f9; }
+.theme-chip-light .theme-chip-dot { background: #f0f6fc; box-shadow: inset 0 0 0 1px #8b949e; }
+
+/* ============================================================
+   guestbook
+   ============================================================ */
+.guestbook-output { padding: 6px 0; }
+.guestbook-output h3 { color: #58a6ff; margin-bottom: 14px; }
+
+.guestbook-list { display: flex; flex-direction: column; gap: 12px; }
+
+.guestbook-item {
+  padding: 12px 14px;
+  background: #161b22;
+  border-radius: 8px;
+  border-left: 3px solid #ffa657;
+}
+
+.guestbook-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.guestbook-name { color: #f0f6fc; font-weight: 600; }
+.guestbook-date { color: #8b949e; font-size: 12px; white-space: nowrap; }
+
+.guestbook-msg {
+  color: #c9d1d9;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.guestbook-empty,
+.guestbook-hint { color: #8b949e; font-size: 13px; margin-top: 10px; }
+
+/* ============================================================
+   Terminal themes — a handful of variables drive the key surfaces
+   ============================================================ */
+.terminal-container {
+  --t-bg: #0d1117;
+  --t-fg: #c9d1d9;
+  --t-muted: #8b949e;
+  --t-card: #161b22;
+  --t-accent: #58a6ff;
+  --t-green: #7ee787;
+}
+
+.terminal-container.theme-matrix {
+  --t-bg: #000a00;
+  --t-fg: #35ff6d;
+  --t-muted: #1f9d4a;
+  --t-card: #021802;
+  --t-accent: #00ff41;
+  --t-green: #00ff41;
+}
+
+.terminal-container.theme-dracula {
+  --t-bg: #282a36;
+  --t-fg: #f8f8f2;
+  --t-muted: #a6accd;
+  --t-card: #1e2029;
+  --t-accent: #bd93f9;
+  --t-green: #50fa7b;
+}
+
+.terminal-container.theme-light {
+  --t-bg: #f6f8fa;
+  --t-fg: #1f2328;
+  --t-muted: #5a6572;
+  --t-card: #eaeef2;
+  --t-accent: #0969da;
+  --t-green: #1a7f37;
+}
+
+/* Apply the variables (only for non-default themes, so the hand-tuned dark
+   theme is untouched) */
+.terminal-container:not(.theme-dark) .terminal-body { background: var(--t-bg); color: var(--t-fg); }
+.terminal-container:not(.theme-dark) .command-text { color: var(--t-fg); }
+.terminal-container:not(.theme-dark) .output-content { color: var(--t-muted); }
+.terminal-container:not(.theme-dark) .terminal-input { color: var(--t-fg); caret-color: var(--t-accent); }
+.terminal-container:not(.theme-dark) .rest-cursor { background: var(--t-accent); box-shadow: 0 0 10px var(--t-accent); }
+.terminal-container:not(.theme-dark) .prompt-user { color: var(--t-green); text-shadow: none; }
+.terminal-container:not(.theme-dark) .prompt-host { color: var(--t-accent); text-shadow: none; }
+.terminal-container:not(.theme-dark) .prompt-path { color: var(--t-accent); }
+.terminal-container:not(.theme-dark) .welcome-text { color: var(--t-green); text-shadow: none; }
+.terminal-container:not(.theme-dark) .welcome-ascii { color: var(--t-accent); text-shadow: none; }
+
+/* Shared card surfaces pick up the theme card colour */
+.terminal-container:not(.theme-dark) .about-bio,
+.terminal-container:not(.theme-dark) .exp-item,
+.terminal-container:not(.theme-dark) .edu-item,
+.terminal-container:not(.theme-dark) .testimonial-item,
+.terminal-container:not(.theme-dark) .contact-list,
+.terminal-container:not(.theme-dark) .stats-section,
+.terminal-container:not(.theme-dark) .message-item,
+.terminal-container:not(.theme-dark) .guestbook-item,
+.terminal-container:not(.theme-dark) .fortune-output,
+.terminal-container:not(.theme-dark) .curl-output,
+.terminal-container:not(.theme-dark) .coffee-output,
+.terminal-container:not(.theme-dark) .sudo-output,
+.terminal-container:not(.theme-dark) .rm-output,
+.terminal-container:not(.theme-dark) .hack-output,
+.terminal-container:not(.theme-dark) .su-prompt,
+.terminal-container:not(.theme-dark) .theme-chip {
+  background: var(--t-card);
+}
+
+/* Light theme needs a lighter chrome (header/footer/title/scrollbar) */
+.terminal-container.theme-light .terminal-header {
+  background: linear-gradient(180deg, #eef1f5 0%, #e4e8ee 100%);
+  border-bottom-color: #d0d7de;
+}
+.terminal-container.theme-light .terminal-title { color: #57606a; }
+.terminal-container.theme-light .terminal-footer {
+  background: #eaeef2;
+  border-top-color: #d0d7de;
+  color: #57606a;
+}
+.terminal-container.theme-light .footer-info { color: #1a7f37; }
+.terminal-container.theme-light .terminal-body::-webkit-scrollbar-track { background: #e4e8ee; }
+.terminal-container.theme-light .terminal-body::-webkit-scrollbar-thumb { background: #c0c7cf; }
+.terminal-container.theme-light .section-title { color: #0969da; }
+.terminal-container.theme-light .input-hint-suffix { color: #8893a0; }
+
+/* Smooth the surface swap when switching theme */
+.terminal-body,
+.terminal-header,
+.terminal-footer {
+  transition: background 0.25s ease, color 0.25s ease;
 }

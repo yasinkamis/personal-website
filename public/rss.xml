@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Yasin Kamış — Blog</title>
+    <link>https://www.yasinkamis.com/blog</link>
+    <atom:link href="https://www.yasinkamis.com/rss.xml" rel="self" type="application/rss+xml"/>
+    <description>Notes on React, performance, SEO and building fast, polished frontends.</description>
+    <language>en</language>
+    <lastBuildDate>Wed, 25 Nov 2026 20:26:31 GMT</lastBuildDate>
+    <item>
+      <title>Why React — and When to Reach for Vite vs Next.js</title>
+      <link>https://www.yasinkamis.com/blog/neden-react-vite-next</link>
+      <guid isPermaLink="true">https://www.yasinkamis.com/blog/neden-react-vite-next</guid>
+      <pubDate>Tue, 24 Nov 2026 00:00:00 GMT</pubDate>
+      <description>React won the frontend, but the real decision is the tool around it. Here&apos;s how I choose between Vite and Next.js.</description>
+    </item>
+    <item>
+      <title>Animation Performance on the Web — Hitting a Steady 60fps</title>
+      <link>https://www.yasinkamis.com/blog/web-animasyon-performansi</link>
+      <guid isPermaLink="true">https://www.yasinkamis.com/blog/web-animasyon-performansi</guid>
+      <pubDate>Mon, 23 Nov 2026 00:00:00 GMT</pubDate>
+      <description>Smooth animation isn&apos;t about doing more — it&apos;s about animating the right properties and respecting the browser&apos;s rendering pipeline.</description>
+    </item>
+    <item>
+      <title>SEO and GEO — Being Found by Search Engines and AI</title>
+      <link>https://www.yasinkamis.com/blog/seo-ve-geo</link>
+      <guid isPermaLink="true">https://www.yasinkamis.com/blog/seo-ve-geo</guid>
+      <pubDate>Sun, 22 Nov 2026 00:00:00 GMT</pubDate>
+      <description>Classic SEO gets you into Google. GEO gets you cited by ChatGPT, Perplexity and friends. Here&apos;s how to do both.</description>
+    </item>
+    <item>
+      <title>Publishing Your Own npm Package — From Code to `npm install`</title>
+      <link>https://www.yasinkamis.com/blog/kendi-npm-kutuphaneni-yaz</link>
+      <guid isPermaLink="true">https://www.yasinkamis.com/blog/kendi-npm-kutuphaneni-yaz</guid>
+      <pubDate>Sat, 21 Nov 2026 00:00:00 GMT</pubDate>
+      <description>Turning a useful utility into a real, installable package is easier than you think. Here&apos;s the full path.</description>
+    </item>
+    <item>
+      <title>Writing Custom Hooks That Are Actually Reusable</title>
+      <link>https://www.yasinkamis.com/blog/custom-hook-gelistirme</link>
+      <guid isPermaLink="true">https://www.yasinkamis.com/blog/custom-hook-gelistirme</guid>
+      <pubDate>Thu, 19 Nov 2026 00:00:00 GMT</pubDate>
+      <description>A custom hook is just a function that uses hooks — but a good one has a clean API, stable references and no surprises.</description>
+    </item>
+    <item>
+      <title>Scoring 100 on Lighthouse — And Why the Number Isn&apos;t the Point</title>
+      <link>https://www.yasinkamis.com/blog/lighthouse-tam-puan</link>
+      <guid isPermaLink="true">https://www.yasinkamis.com/blog/lighthouse-tam-puan</guid>
+      <pubDate>Wed, 18 Nov 2026 00:00:00 GMT</pubDate>
+      <description>A perfect Lighthouse score is a byproduct of real performance work. Here&apos;s the checklist I actually use.</description>
+    </item>
+  </channel>
+</rss>

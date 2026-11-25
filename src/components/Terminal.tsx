@@ -5,7 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useData } from '../contexts/DataContext';
 import { commands } from '../commands';
 import { trackCommand } from '../services/dataService';
-import type { TerminalOutput, CommandContext } from '../types';
+import type { TerminalOutput, CommandContext, TerminalTheme } from '../types';
 import './Terminal.css';
 import Icon from './Icon';
 
@@ -16,8 +16,23 @@ const Terminal: React.FC = () => {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const [isFocused, setIsFocused] = useState(false);
+
+  // Terminal color theme (persisted)
+  const [theme, setThemeState] = useState<TerminalTheme>(() => {
+    const saved = localStorage.getItem('terminal-theme');
+    return saved === 'matrix' || saved === 'dracula' || saved === 'light' || saved === 'dark'
+      ? saved
+      : 'dark';
+  });
+  const setTheme = useCallback((next: TerminalTheme) => {
+    setThemeState(next);
+    localStorage.setItem('terminal-theme', next);
+  }, []);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
+  const processCommandRef = useRef<(cmd: string) => void>(() => {});
 
   const { currentUser, isAuthenticated, login, logout } = useAuth();
   const { language, setLanguage, t } = useLanguage();
@@ -37,16 +52,58 @@ const Terminal: React.FC = () => {
   }, []);
 
   // Scroll to bottom
-  useEffect(() => {
-    if (terminalRef.current) {
-      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
-    }
-  }, [outputs]);
+  const scrollToBottom = useCallback(() => {
+    const el = terminalRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, []);
 
-  // Focus input on click
+  useEffect(() => {
+    scrollToBottom();
+  }, [outputs, scrollToBottom]);
+
+  // Keep the layout pinned to the *visible* viewport. When the mobile keyboard
+  // opens, visualViewport shrinks; we mirror that into --tvh so the terminal
+  // resizes to the space above the keyboard and the input never hides behind it.
+  useEffect(() => {
+    const vv = window.visualViewport;
+    const root = document.documentElement;
+    const apply = () => {
+      const h = vv ? vv.height : window.innerHeight;
+      root.style.setProperty('--tvh', `${Math.round(h)}px`);
+    };
+    apply();
+    if (vv) {
+      vv.addEventListener('resize', apply);
+      vv.addEventListener('scroll', apply);
+    }
+    window.addEventListener('resize', apply);
+    window.addEventListener('orientationchange', apply);
+    return () => {
+      if (vv) {
+        vv.removeEventListener('resize', apply);
+        vv.removeEventListener('scroll', apply);
+      }
+      window.removeEventListener('resize', apply);
+      window.removeEventListener('orientationchange', apply);
+      root.style.removeProperty('--tvh');
+    };
+  }, []);
+
+  // Focus input on click (ignore clicks that are really text selections so
+  // users can still copy output on both desktop and mobile).
   const handleTerminalClick = () => {
+    const selection = window.getSelection?.();
+    if (selection && selection.toString().length > 0) return;
     inputRef.current?.focus();
   };
+
+  // When the field gains focus (e.g. keyboard opens), make sure the prompt is
+  // in view after the viewport settles.
+  const handleInputFocus = () => {
+    setIsFocused(true);
+    window.setTimeout(scrollToBottom, 100);
+  };
+
 
   // Welcome message
   useEffect(() => {
@@ -54,6 +111,11 @@ const Terminal: React.FC = () => {
       id: generateId(),
       output: (
         <div className="welcome-message">
+          <div className="welcome-boot">
+            <span className="wb-line wb-1"><span className="wb-ok">[&nbsp;OK&nbsp;]</span> {t('bootInit')}</span>
+            <span className="wb-line wb-2"><span className="wb-ok">[&nbsp;OK&nbsp;]</span> {t('bootModules')}</span>
+            <span className="wb-line wb-3"><span className="wb-ok">[&nbsp;OK&nbsp;]</span> {t('bootReady')}</span>
+          </div>
           <pre className="welcome-ascii">{`
 ██╗   ██╗ █████╗ ███████╗██╗███╗   ██╗
 ╚██╗ ██╔╝██╔══██╗██╔════╝██║████╗  ██║
@@ -64,13 +126,19 @@ const Terminal: React.FC = () => {
           `}</pre>
           <p className="welcome-text">{t('welcome')}</p>
           <p className="welcome-hint">{t('typeHelp')}</p>
-          <p className="welcome-version">v1.0.0 | React Vite + TypeScript + Firebase</p>
+          <p className="welcome-version">v1.1.0 | React Vite + TypeScript + Firebase</p>
         </div>
       ),
       timestamp: new Date(),
     };
     setOutputs([welcomeOutput]);
   }, [t]);
+
+  // Run a command programmatically (clickable help entries, deep links).
+  const runCommand = useCallback((cmd: string) => {
+    processCommandRef.current(cmd);
+    inputRef.current?.focus();
+  }, []);
 
   // Create command context
   const createContext = useCallback((): CommandContext => ({
@@ -89,7 +157,11 @@ const Terminal: React.FC = () => {
     data,
     setData,
     refreshData,
-  }), [isAuthenticated, currentUser, language, setLanguage, t, clearTerminal, addOutput, data, setData, refreshData, logout]);
+    commandHistory,
+    runCommand,
+    theme,
+    setTheme,
+  }), [isAuthenticated, currentUser, language, setLanguage, t, clearTerminal, addOutput, data, setData, refreshData, logout, commandHistory, runCommand, theme, setTheme]);
 
   // Process command
   const processCommand = useCallback(async (cmd: string) => {
@@ -195,6 +267,29 @@ const Terminal: React.FC = () => {
     }
   }, [createContext, login, t]);
 
+  // Keep the ref pointing at the latest processCommand so runCommand (stable)
+  // can call it without a circular dependency.
+  useEffect(() => {
+    processCommandRef.current = processCommand;
+  }, [processCommand]);
+
+  // Deep link: /terminal?cmd=about runs that command once data is ready.
+  useEffect(() => {
+    const cmd = new URLSearchParams(window.location.search).get('cmd');
+    if (!cmd) return;
+    const id = window.setTimeout(() => runCommand(cmd), 450);
+    return () => window.clearTimeout(id);
+  }, [runCommand]);
+
+  // Inline autocomplete hint — the completion of the first matching command,
+  // shown as dim ghost text after what the user typed (single token only).
+  const hint = (() => {
+    if (!input || /\s/.test(input)) return '';
+    const lower = input.toLowerCase();
+    const match = Object.keys(commands).find(c => c.startsWith(lower) && c !== lower);
+    return match ? match.slice(input.length) : '';
+  })();
+
   // Handle key press
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !isProcessing) {
@@ -205,14 +300,16 @@ const Terminal: React.FC = () => {
       if (commandHistory.length > 0) {
         const newIndex = historyIndex < commandHistory.length - 1 ? historyIndex + 1 : historyIndex;
         setHistoryIndex(newIndex);
-        setInput(commandHistory[commandHistory.length - 1 - newIndex] || '');
+        const value = commandHistory[commandHistory.length - 1 - newIndex] || '';
+        setInput(value);
       }
     } else if (e.key === 'ArrowDown') {
       e.preventDefault();
       if (historyIndex > 0) {
         const newIndex = historyIndex - 1;
         setHistoryIndex(newIndex);
-        setInput(commandHistory[commandHistory.length - 1 - newIndex] || '');
+        const value = commandHistory[commandHistory.length - 1 - newIndex] || '';
+        setInput(value);
       } else if (historyIndex === 0) {
         setHistoryIndex(-1);
         setInput('');
@@ -232,6 +329,13 @@ const Terminal: React.FC = () => {
           timestamp: new Date(),
         };
         setOutputs(prev => [...prev, completionOutput]);
+      }
+    } else if (e.key === 'ArrowRight' && hint) {
+      // Accept the inline suggestion when the caret is at the very end.
+      const el = e.currentTarget;
+      if (el.selectionStart === input.length && el.selectionEnd === input.length) {
+        e.preventDefault();
+        setInput(input + hint);
       }
     } else if (e.ctrlKey && e.key === 'l') {
       e.preventDefault();
@@ -267,7 +371,7 @@ const Terminal: React.FC = () => {
   };
 
   return (
-    <div className="terminal-container" onClick={handleTerminalClick}>
+    <div className={`terminal-container theme-${theme}`} onClick={handleTerminalClick}>
       <div className="terminal-header">
         <div className="terminal-buttons">
           <span className="btn-close"></span>
@@ -297,39 +401,59 @@ const Terminal: React.FC = () => {
       </div>
 
       <div className="terminal-body" ref={terminalRef}>
-        {outputs.map((output) => (
-          <div key={output.id} className="output-line">
-            {output.command !== undefined && (
-              <div className="command-line">
-                {getPrompt()}
-                <span className="command-text">{output.command}</span>
-              </div>
-            )}
-            {output.output && (
-              <div className={`output-content ${output.isError ? 'error' : ''}`}>
-                {output.output}
-              </div>
-            )}
-          </div>
-        ))}
+        <div className="terminal-output" aria-live="polite">
+          {outputs.map((output) => (
+            <div key={output.id} className="output-line">
+              {output.command !== undefined && (
+                <div className="command-line">
+                  {getPrompt()}
+                  <span className="command-text">{output.command}</span>
+                </div>
+              )}
+              {output.output && (
+                <div className={`output-content ${output.isError ? 'error' : ''}`}>
+                  {output.output}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
 
-        <div className="input-line">
+        <div className={`input-line${isFocused && !isProcessing ? ' is-focused' : ''}${input.length === 0 ? ' is-empty' : ''}`}>
           {getPrompt()}
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="terminal-input"
-            autoFocus
-            autoComplete="off"
-            autoCapitalize="off"
-            autoCorrect="off"
-            spellCheck={false}
-            disabled={isProcessing}
-          />
-          <span className="cursor"></span>
+          <span className="input-wrap">
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onFocus={handleInputFocus}
+              onBlur={() => setIsFocused(false)}
+              className="terminal-input"
+              autoFocus
+              autoComplete="off"
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck={false}
+              inputMode="text"
+              enterKeyHint="send"
+              aria-label="Terminal command input"
+              disabled={isProcessing}
+            />
+            {/* Inline autocomplete hint: an invisible copy of the typed text
+                reserves the exact width, then the dim suffix shows right after. */}
+            {hint && (
+              <span className="input-hint" aria-hidden="true">
+                <span className="input-hint-typed">{input}</span>
+                <span className="input-hint-suffix">{hint}</span>
+              </span>
+            )}
+            {/* Resting block cursor: shown only when the field is empty & focused,
+                so the prompt looks "alive". Once typing starts the native accent
+                caret takes over — always perfectly aligned, on every device. */}
+            <span className="rest-cursor" aria-hidden="true" />
+          </span>
         </div>
       </div>
 

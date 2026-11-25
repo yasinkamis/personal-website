@@ -192,6 +192,31 @@ export const translations = {
 [ ] Take over the world (after coffee)
 [ ] Sleep (eventually)
 `,
+
+    // Boot sequence (welcome)
+    bootInit: 'initializing portfolio terminal…',
+    bootModules: 'mounting modules · react · vite · firebase',
+    bootReady: 'session ready',
+
+    // History
+    historyEmpty: 'No commands in history yet.',
+
+    // Theme
+    themeDesc: 'Change the terminal theme',
+    themeCurrent: 'Current theme',
+    themeUsage: 'Usage: theme <dark|matrix|dracula|light>',
+    themeApplied: 'Theme applied',
+    themeInvalid: 'Unknown theme',
+
+    // Guestbook
+    guestbookDesc: 'Sign or read the guestbook',
+    guestbookTitle: 'Guestbook',
+    guestbookEmpty: 'No entries yet — be the first to sign!',
+    guestbookUsage: 'Sign it: guestbook --name "Name" --msg "Message"',
+    guestbookNeedFields: 'Both --name and --msg are required.',
+    guestbookThanks: 'Thanks for signing the guestbook!',
+    guestbookSignedAs: 'Signed as',
+    guestbookError: 'Could not save your entry. Please try again later.',
   },
   tr: {
     // Terminal
@@ -386,6 +411,31 @@ export const translations = {
 [ ] Dünyayı fethetmek (kahveden sonra)
 [ ] Uyumak (sonunda)
 `,
+
+    // Boot sequence (welcome)
+    bootInit: 'portföy terminali başlatılıyor…',
+    bootModules: 'modüller yükleniyor · react · vite · firebase',
+    bootReady: 'oturum hazır',
+
+    // History
+    historyEmpty: 'Henüz geçmişte komut yok.',
+
+    // Theme
+    themeDesc: 'Terminal temasını değiştir',
+    themeCurrent: 'Mevcut tema',
+    themeUsage: 'Kullanım: theme <dark|matrix|dracula|light>',
+    themeApplied: 'Tema uygulandı',
+    themeInvalid: 'Bilinmeyen tema',
+
+    // Guestbook
+    guestbookDesc: 'Ziyaretçi defterini imzala veya oku',
+    guestbookTitle: 'Ziyaretçi Defteri',
+    guestbookEmpty: 'Henüz kayıt yok — ilk imzalayan sen ol!',
+    guestbookUsage: 'İmzala: guestbook --name "İsim" --msg "Mesaj"',
+    guestbookNeedFields: 'Hem --name hem --msg gerekli.',
+    guestbookThanks: 'Ziyaretçi defterini imzaladığın için teşekkürler!',
+    guestbookSignedAs: 'İmzalayan',
+    guestbookError: 'Kaydın kaydedilemedi. Lütfen daha sonra tekrar dene.',
   },
 };
 
