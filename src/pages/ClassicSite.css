@@ -364,12 +364,13 @@ html.lenis, html.lenis body { height: auto; }
   .cs-hamburger { display: flex; }
   .cs-nav-links-mobile {
     display: flex; flex-direction: column; justify-content: flex-start; align-items: center;
-    gap: 0.4rem; padding: 6rem 1.5rem 2.5rem; overflow-y: auto; -webkit-overflow-scrolling: touch;
-    position: fixed; inset: 0; z-index: 95; background: rgba(2, 5, 11, 0.97);
+    gap: 0.15rem; padding: 7rem 1.5rem 3rem; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    position: fixed; inset: 0; z-index: 95; background: rgba(2, 5, 11, 0.98);
     opacity: 0; pointer-events: none; transition: opacity 0.4s;
   }
-  .cs-nav-links-mobile li { padding: 0.35rem 0; }
-  .cs-nav-links-mobile .cs-nav-link { font-size: 1.5rem; font-weight: 600; line-height: 1.2; }
+  .cs-nav-links-mobile li { padding: 0.28rem 0; }
+  .cs-nav-links-mobile .cs-nav-link { font-size: 1.15rem; font-weight: 600; line-height: 1.2; }
+  .cs-nav-links-mobile .cs-nav-link-accent { font-size: 1.05rem !important; }
   .cs-nav-links-open { opacity: 1; pointer-events: auto; }
   .cs-nav-mid .cs-terminal-btn { display: none; }
   .cs-hamburger { position: relative; z-index: 110; }
@@ -378,7 +379,7 @@ html.lenis, html.lenis body { height: auto; }
   .cs-section { padding: 6rem 0; }
   .cs-about-grid, .cs-skills-grid { grid-template-columns: 1fr; }
   /* mobile: full-height hero, content clears the fixed nav, roomy rhythm */
-  .cs-hero { min-height: 100svh; align-items: center; }
+  .cs-hero { min-height: 100svh; align-items: flex-start; }
   .cs-hero-content { padding: 7.5rem 1.4rem 4rem; }
   .cs-hero-greeting { margin-bottom: 1.2rem; font-size: 0.82rem; }
   .cs-hero-name { margin-bottom: 1.4rem; line-height: 1.07; }
@@ -447,7 +448,6 @@ html.lenis, html.lenis body { height: auto; }
 .cs-nav-links-mobile .cs-nav-link-accent {
   color: var(--blue);
   font-family: var(--mono);
-  font-size: 1.4rem !important;
   font-weight: 600;
 }
 
