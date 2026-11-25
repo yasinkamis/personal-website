@@ -362,9 +362,9 @@ html.lenis, html.lenis body { height: auto; }
 @media (max-width: 1000px) {
   .cs-nav-links-desktop { display: none; }
   .cs-hamburger { display: flex; }
-  .cs-nav-links-mobile {
+  .classic-site .cs-nav-links-mobile {
     display: flex; flex-direction: column; justify-content: flex-start; align-items: center;
-    gap: 0.15rem; padding: 7rem 1.5rem 3rem; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    gap: 0.15rem; padding: 6.5rem 1.5rem 3rem; overflow-y: auto; -webkit-overflow-scrolling: touch;
     position: fixed; inset: 0; z-index: 95; background: #04070e;
     opacity: 0; pointer-events: none; transition: opacity 0.4s;
   }
