@@ -264,7 +264,7 @@ function ClassicContent({ data }: { data: PortfolioData }) {
         .to('.cs-preloader-inner', { yPercent: -30, opacity: 0, duration: 0.6, ease: 'power3.in' })
         .to('.cs-preloader', { yPercent: -100, duration: 0.95, ease: 'expo.inOut' }, '-=0.2')
         .add(() => { lenis.start(); }, '-=0.5')
-        .from('.cs-hero .cs-ch', { yPercent: 120, rotate: 10, duration: 1.25, stagger: 0.035 }, '-=0.5')
+        .from('.cs-hero .cs-ch', { yPercent: 45, opacity: 0, rotate: 6, duration: 1.1, stagger: 0.03 }, '-=0.5')
         .from('.cs-hero-greeting, .cs-hero-title-row, .cs-hero-bio', { y: 30, opacity: 0, duration: 1, stagger: 0.12 }, '-=0.9')
         .from('.cs-hero-ctas > *, .cs-hero-stat', { y: 40, opacity: 0, duration: 0.9, stagger: 0.08 }, '-=0.8')
         .from('.cs-nav', { yPercent: -100, opacity: 0, duration: 0.9 }, '-=0.9')
