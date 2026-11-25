@@ -15,11 +15,11 @@ interface GateOpts {
 }
 
 const GATE_DEF: Record<GateKey, { title: string; sub: Record<Lang, string>; color: number; x: number }> = {
-  terminal: { title: 'TERMINAL', sub: { en: 'power user', tr: 'uzman kullanıcı' }, color: 0x7ee787, x: -3.2 },
-  classic: { title: 'CLASSIC', sub: { en: 'visual tour', tr: 'görsel tur' }, color: 0x79c0ff, x: 3.2 },
+  terminal: { title: 'TERMINAL', sub: { en: 'power user', tr: 'uzman kullanıcı' }, color: 0x7ee787, x: -2.7 },
+  classic: { title: 'CLASSIC', sub: { en: 'visual tour', tr: 'görsel tur' }, color: 0x79c0ff, x: 2.7 },
 };
 
-const GATE_Z = -9;
+const GATE_Z = -6;
 
 function makeLabelTexture(title: string, sub: string, colorHex: string): THREE.CanvasTexture {
   const w = 512, h = 192;
@@ -44,6 +44,44 @@ function makeLabelTexture(title: string, sub: string, colorHex: string): THREE.C
   return tex;
 }
 
+/** Procedural dark tech-floor texture (panels + seams + speckle). */
+function makeFloorTexture(): THREE.CanvasTexture {
+  const s = 512;
+  const cv = document.createElement('canvas');
+  cv.width = s; cv.height = s;
+  const ctx = cv.getContext('2d')!;
+  ctx.fillStyle = '#070b14';
+  ctx.fillRect(0, 0, s, s);
+  // panel tiles
+  const tiles = 4;
+  const step = s / tiles;
+  for (let x = 0; x < tiles; x++) {
+    for (let y = 0; y < tiles; y++) {
+      const v = 8 + Math.floor(Math.random() * 6);
+      ctx.fillStyle = `rgb(${v},${v + 4},${v + 12})`;
+      ctx.fillRect(x * step + 2, y * step + 2, step - 4, step - 4);
+    }
+  }
+  // seams
+  ctx.strokeStyle = 'rgba(90,120,180,0.18)';
+  ctx.lineWidth = 2;
+  for (let i = 0; i <= tiles; i++) {
+    ctx.beginPath(); ctx.moveTo(i * step, 0); ctx.lineTo(i * step, s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, i * step); ctx.lineTo(s, i * step); ctx.stroke();
+  }
+  // speckle
+  for (let i = 0; i < 1400; i++) {
+    ctx.fillStyle = `rgba(150,180,220,${Math.random() * 0.05})`;
+    ctx.fillRect(Math.random() * s, Math.random() * s, 1, 1);
+  }
+  const tex = new THREE.CanvasTexture(cv);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(26, 26);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  return tex;
+}
+
 /** A dim "info board" mounted on the hall walls. */
 function makePanelTexture(label: string, sub: string): THREE.CanvasTexture {
   const w = 512, h = 288;
@@ -57,13 +95,13 @@ function makePanelTexture(label: string, sub: string): THREE.CanvasTexture {
   ctx.strokeRect(10, 10, w - 20, h - 20);
   ctx.fillStyle = 'rgba(94,234,212,0.9)';
   ctx.font = '600 24px "JetBrains Mono", monospace';
-  ctx.fillText(sub, 34, 60);
+  ctx.fillText(sub, 34, 64);
   ctx.fillStyle = '#e8eefb';
-  ctx.font = '800 74px Inter, "Segoe UI", system-ui, sans-serif';
-  ctx.fillText(label, 32, 168);
+  ctx.font = '800 46px Inter, "Segoe UI", system-ui, sans-serif';
+  ctx.fillText(label, 32, 150);
   ctx.fillStyle = 'rgba(138,153,179,0.7)';
   ctx.font = '500 22px "JetBrains Mono", monospace';
-  ctx.fillText('// yasinkamis.com', 34, 240);
+  ctx.fillText('// yasinkamis.com', 34, 236);
   const tex = new THREE.CanvasTexture(cv);
   tex.anisotropy = 4;
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -79,14 +117,14 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
   renderer.setSize(window.innerWidth, window.innerHeight, false);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.9;
-  renderer.setClearColor(0x03060d, 1);
+  renderer.setClearColor(0x000000, 1);
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x03060d, 0.035);
+  scene.fog = new THREE.FogExp2(0x000000, 0.092);
 
   const camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.1, 200);
   camera.rotation.order = 'YXZ';
-  camera.position.set(0, 1.6, 5);
+  camera.position.set(0, 1.6, 3.6);
 
   // environment reflections (procedural, no downloads)
   const pmrem = new THREE.PMREMGenerator(renderer);
@@ -96,81 +134,88 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
   const disposables: Array<{ dispose(): void }> = [];
   const track = <T extends { dispose(): void }>(o: T): T => { disposables.push(o); return o; };
 
-  // lights
-  scene.add(new THREE.HemisphereLight(0x8fb8ff, 0x0a0f1c, 0.38));
-  const key = new THREE.DirectionalLight(0xbcd4ff, 0.28);
+  // lights — near-black ambient; the gates light their own surroundings
+  scene.add(new THREE.HemisphereLight(0x5a76b8, 0x04060c, 0.05));
+  const key = new THREE.DirectionalLight(0xbcd4ff, 0.05);
   key.position.set(3, 8, 6);
   scene.add(key);
 
-  // reflective floor
+  // textured matte floor (procedural tech panels)
+  const floorTex = track(makeFloorTexture());
   const floorMat = track(new THREE.MeshStandardMaterial({
-    color: 0x04060c, metalness: 0.55, roughness: 0.62, envMapIntensity: 0.2,
+    color: 0xffffff, map: floorTex, metalness: 0.0, roughness: 1.0, envMapIntensity: 0.04,
   }));
-  const floor = new THREE.Mesh(track(new THREE.PlaneGeometry(140, 140)), floorMat);
+  const floor = new THREE.Mesh(track(new THREE.PlaneGeometry(160, 160)), floorMat);
   floor.rotation.x = -Math.PI / 2;
   scene.add(floor);
 
-  const grid = new THREE.GridHelper(140, 140, 0x24375f, 0x18263f);
-  (grid.material as THREE.Material & { transparent: boolean; opacity: number }).transparent = true;
-  (grid.material as THREE.Material & { opacity: number }).opacity = 0.22;
-  grid.position.y = 0.02;
-  scene.add(grid);
-  disposables.push(grid.geometry, grid.material as THREE.Material);
-
-  // ambient particles
-  const pN = isMobile ? 240 : 560;
-  const pPos = new Float32Array(pN * 3);
-  for (let i = 0; i < pN; i++) {
-    pPos[i * 3] = (Math.random() - 0.5) * 70;
-    pPos[i * 3 + 1] = Math.random() * 14;
-    pPos[i * 3 + 2] = -Math.random() * 60 + 10;
+  // distant starfield — gives the sky depth (unaffected by fog, parallax on look/move)
+  const starN = isMobile ? 520 : 1300;
+  const sPos = new Float32Array(starN * 3);
+  for (let i = 0; i < starN; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r = 55 + Math.random() * 40;
+    sPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+    sPos[i * 3 + 1] = Math.abs(r * Math.cos(phi)) * 0.8 + 3; // bias above the horizon
+    sPos[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
   }
   const pGeo = track(new THREE.BufferGeometry());
-  pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+  pGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
   const pMat = track(new THREE.PointsMaterial({
-    color: 0x9fc0ff, size: 0.05, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false,
+    color: 0xcdddff, size: 1.6, sizeAttenuation: false, transparent: true, opacity: 0.85, depthWrite: false,
   }));
+  pMat.fog = false;
   const particles = new THREE.Points(pGeo, pMat);
   scene.add(particles);
 
-  // side pillars for a "hall" feel
-  const pillarMat = track(new THREE.MeshStandardMaterial({ color: 0x080d18, metalness: 0.2, roughness: 0.78, envMapIntensity: 0.15 }));
-  const pillarGeo = track(new THREE.BoxGeometry(0.42, 7, 0.42));
-  for (let i = 0; i < 7; i++) {
-    const z = 4 - i * 4;
-    for (const sx of [-7, 7]) {
+  // rounded hall columns (some carry a board, some stay empty)
+  const SIDE_X = 5.6;
+  const PILLAR_Z = [2, -2, -6, -10];
+  const pillarMat = track(new THREE.MeshStandardMaterial({ color: 0x0c1526, metalness: 0.28, roughness: 0.62, envMapIntensity: 0.22 }));
+  const capMat = track(new THREE.MeshStandardMaterial({ color: 0x0a0f1b, emissive: 0x18294a, emissiveIntensity: 0.5, metalness: 0.4, roughness: 0.45 }));
+  const pillarGeo = track(new THREE.CylinderGeometry(0.26, 0.28, 7, 32));
+  const capGeo = track(new THREE.CylinderGeometry(0.4, 0.4, 0.22, 32));
+  for (const sx of [-SIDE_X, SIDE_X]) {
+    for (const z of PILLAR_Z) {
       const pil = new THREE.Mesh(pillarGeo, pillarMat);
       pil.position.set(sx, 3.5, z);
       scene.add(pil);
+      const cap = new THREE.Mesh(capGeo, capMat); cap.position.set(sx, 7.0, z); scene.add(cap);
+      const base = new THREE.Mesh(capGeo, capMat); base.position.set(sx, 0.11, z); scene.add(base);
     }
   }
 
-  // dim info boards mounted on the hall walls
-  const BOARDS: Array<[string, string]> = [
-    ['REACT', '// frontend'], ['NEXT.JS', '// framework'], ['THREE.JS', '// 3d'],
-    ['TYPESCRIPT', '// types'], ['GSAP', '// motion'], ['NODE.JS', '// backend'],
+  // professional competency boards, mounted on the inner face of some columns
+  const BOARDS: Array<[number, number, string, string]> = [
+    [-SIDE_X, 2, 'VITE.JS', '// instant build'],
+    [-SIDE_X, -2, 'ARCHITECTURE', '// scalable UI'],
+    [-SIDE_X, -6, 'PERFORMANCE', '// web vitals'],
+    [-SIDE_X, -10, 'SEO · GEO', '// discoverable'],
+    [SIDE_X, 2, 'REACT · NEXT', '// frontend'],
+    [SIDE_X, -2, 'DESIGN SYSTEMS', '// consistent UX'],
+    [SIDE_X, -6, 'ACCESSIBILITY', '// a11y'],
+    [SIDE_X, -10, '3D · MOTION', '// three · gsap'],
   ];
-  const boardGeo = track(new THREE.PlaneGeometry(3.2, 1.8));
-  BOARDS.forEach((b, i) => {
-    const side = i < 3 ? -1 : 1;
-    const zPos = 2 - (i % 3) * 4.4;
-    const tex = track(makePanelTexture(b[0], b[1]));
-    const mat = track(new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0.85 }));
+  const boardGeo = track(new THREE.PlaneGeometry(2.4, 1.4));
+  BOARDS.forEach(([bx, bz, label, sub]) => {
+    const side = bx < 0 ? -1 : 1;
+    const tex = track(makePanelTexture(label, sub));
+    const mat = track(new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0.82 }));
     const board = new THREE.Mesh(boardGeo, mat);
-    board.position.set(side * 6.75, 3.0, zPos);
+    board.position.set(bx - side * 0.3, 3.1, bz);
     board.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2;
     scene.add(board);
   });
 
-  // slow floating wireframe shapes (ambiance)
+  // slow floating wireframe shapes (subtle ambiance)
   const floaters: THREE.Mesh[] = [];
-  const floatMat = track(new THREE.MeshBasicMaterial({ color: 0x2b3f6b, wireframe: true, transparent: true, opacity: 0.45 }));
+  const floatMat = track(new THREE.MeshBasicMaterial({ color: 0x24375f, wireframe: true, transparent: true, opacity: 0.32 }));
   const floatGeos = [
-    track(new THREE.IcosahedronGeometry(0.8, 0)),
-    track(new THREE.OctahedronGeometry(0.7, 0)),
-    track(new THREE.TetrahedronGeometry(0.95, 0)),
+    track(new THREE.IcosahedronGeometry(0.7, 0)),
+    track(new THREE.OctahedronGeometry(0.6, 0)),
   ];
-  const floatPos: Array<[number, number, number]> = [[-5, 5.6, -5], [5.4, 6.1, -1], [0, 6.6, -12]];
+  const floatPos: Array<[number, number, number]> = [[-3.4, 5.2, -3], [3.4, 5.6, -7]];
   floatGeos.forEach((g, i) => {
     const m = new THREE.Mesh(g, floatMat);
     m.position.set(...floatPos[i]);
@@ -268,6 +313,8 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
   let raf = 0;
   const raycaster = new THREE.Raycaster();
   const tapNDC = new THREE.Vector2();
+  const hoverNDC = new THREE.Vector2();
+  let hoverKey: GateKey | null = null;
 
   // drag-look
   let dragging = false, lastX = 0, lastY = 0, downT = 0, moved = 0;
@@ -298,12 +345,23 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
     lastX = e.clientX; lastY = e.clientY; downT = performance.now();
   };
   const onMove = (e: PointerEvent) => {
-    if (!dragging) return;
-    const dx = e.clientX - lastX, dy = e.clientY - lastY;
-    lastX = e.clientX; lastY = e.clientY;
-    moved += Math.abs(dx) + Math.abs(dy);
-    yaw -= dx * LOOK;
-    pitch = Math.max(-1.0, Math.min(1.0, pitch - dy * LOOK));
+    if (dragging) {
+      const dx = e.clientX - lastX, dy = e.clientY - lastY;
+      lastX = e.clientX; lastY = e.clientY;
+      moved += Math.abs(dx) + Math.abs(dy);
+      yaw -= dx * LOOK;
+      pitch = Math.max(-1.0, Math.min(1.0, pitch - dy * LOOK));
+      return;
+    }
+    // mouse-hover highlight on gates (desktop)
+    hoverNDC.x = (e.clientX / window.innerWidth) * 2 - 1;
+    hoverNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(hoverNDC, camera);
+    const hit = raycaster.intersectObjects(gates.map(g => g.group), true);
+    let o: THREE.Object3D | null = hit[0]?.object ?? null;
+    while (o && o.userData.gateKey == null) o = o.parent;
+    hoverKey = (o?.userData.gateKey as GateKey | undefined) ?? null;
+    canvas.style.cursor = hoverKey ? 'pointer' : 'grab';
   };
   const onUp = (e: PointerEvent) => {
     const wasTap = moved < 10 && performance.now() - downT < 320;
@@ -353,8 +411,8 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
     if (vel.lengthSq() > 1) vel.normalize();
     const speed = 6 * (1 - warp);
     camera.position.addScaledVector(vel, speed * dt);
-    camera.position.x = Math.max(-15, Math.min(15, camera.position.x));
-    camera.position.z = Math.max(-13, Math.min(12, camera.position.z));
+    camera.position.x = Math.max(-9, Math.min(9, camera.position.x));
+    camera.position.z = Math.max(-12, Math.min(10, camera.position.z));
     camera.position.y = 1.6 + Math.sin(t * 8) * (vel.lengthSq() > 0.01 ? 0.03 : 0); // head bob
 
     // nearest gate (proximity) unless a button forces it
@@ -364,16 +422,16 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
       const dxz = Math.hypot(camera.position.x - g.pos.x, camera.position.z - g.pos.z);
       if (dxz < 4.2 && dxz < nd) { nd = dxz; nearest = g.key; }
     });
-    setActive(forcedActive ?? nearest);
+    setActive(forcedActive ?? hoverKey ?? nearest);
 
     // animate gates
     gates.forEach((g, i) => {
       const isActive = activeKey === g.key;
       g.activeT += ((isActive ? 1 : 0) - g.activeT) * 0.1;
-      g.frameMat.emissiveIntensity = 0.45 + g.activeT * 0.8 + Math.sin(t * 2 + i) * 0.04;
-      g.portalMat.emissiveIntensity = 0.6 + g.activeT * 0.9;
-      g.portalMat.opacity = 0.34 + Math.sin(t * 1.5 + i) * 0.05 + g.activeT * 0.14;
-      g.light.intensity = 2.4 + g.activeT * 4.5;
+      g.frameMat.emissiveIntensity = 0.28 + g.activeT * 0.6 + Math.sin(t * 2 + i) * 0.03;
+      g.portalMat.emissiveIntensity = 0.3 + g.activeT * 0.5;
+      g.portalMat.opacity = 0.22 + Math.sin(t * 1.5 + i) * 0.03 + g.activeT * 0.18;
+      g.light.intensity = 1.8 + g.activeT * 3;
       g.label.lookAt(camera.position.x, g.label.getWorldPosition(new THREE.Vector3()).y, camera.position.z);
       const vis = ready;
       g.labelMat.opacity = vis;

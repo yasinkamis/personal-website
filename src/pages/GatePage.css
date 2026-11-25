@@ -481,3 +481,64 @@
     font-size: 11px;
   }
 }
+
+/* ── mobile HUD: no overlap, cleaner ── */
+@media (pointer: coarse) {
+  .gate-hud-top { top: clamp(14px, 3.5vh, 36px); }
+  .gate-hud-title { font-size: clamp(1.3rem, 5.6vw, 1.9rem); margin: 4px 0 8px; }
+  .gate-hud-hint { font-size: 0.72rem; line-height: 1.4; }
+  .gate-hud .gate-choice-row {
+    bottom: auto;
+    top: clamp(104px, 21vh, 184px);
+    width: min(330px, calc(100vw - 40px));
+    gap: 10px;
+  }
+  .gate-choice-btn { padding: 11px 10px; border-radius: 12px; }
+  .gcb-main { font-size: 0.92rem; }
+  .gcb-sub { font-size: 0.66rem; }
+  .gate-joystick {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: clamp(26px, 9vh, 64px);
+    width: 120px; height: 120px;
+  }
+}
+
+/* ── "enter" affordance when a gate is hovered / approached ── */
+.gate-enter-prompt {
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  pointer-events: none;
+  text-align: center;
+  animation: gep-pulse 1.5s ease-in-out infinite;
+}
+.gep-key {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  padding: 5px 11px;
+  border: 1px solid currentColor;
+  border-radius: 7px;
+  opacity: 0.85;
+}
+.gep-text {
+  font-size: clamp(1.05rem, 3.4vw, 1.5rem);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+.gate-enter-terminal { color: #7ee787; text-shadow: 0 0 22px rgba(126, 231, 135, 0.55); }
+.gate-enter-classic { color: #79c0ff; text-shadow: 0 0 22px rgba(121, 192, 255, 0.55); }
+@keyframes gep-pulse {
+  0%, 100% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.04); }
+}
+@media (pointer: coarse) {
+  .gate-enter-prompt { top: auto; bottom: clamp(150px, 30vh, 230px); }
+}

@@ -46,6 +46,7 @@ export default function GatePage() {
   const [visibleCount, setVisibleCount] = useState(0);
   const [showQuestion, setShowQuestion] = useState(false);
   const [leaving, setLeaving] = useState(false);
+  const [active, setActive] = useState<GateKey | null>(null);
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef<GateSceneApi | null>(null);
@@ -74,7 +75,7 @@ export default function GatePage() {
       try {
         const sc = createGateScene(canvas, {
           lang: langRef.current,
-          onHover: k => { if (k === 'classic') void import('./ClassicSite'); },
+          onHover: k => { setActive(k); if (k === 'classic') void import('./ClassicSite'); },
           onSelect: k => choiceRef.current(k),
         });
         sceneRef.current = sc;
@@ -193,6 +194,19 @@ export default function GatePage() {
           </div>
 
           {!isTouch.current && <div className="gate-crosshair" />}
+
+          {active && !leaving && (
+            <div className={`gate-enter-prompt gate-enter-${active}`}>
+              <span className="gep-key">
+                {isTouch.current ? (lang === 'tr' ? 'DOKUN' : 'TAP') : (lang === 'tr' ? 'TIKLA / E' : 'CLICK / E')}
+              </span>
+              <span className="gep-text">
+                {lang === 'tr'
+                  ? `${active === 'terminal' ? 'TERMINAL' : 'CLASSIC'} moduna gir →`
+                  : `Enter ${active === 'terminal' ? 'TERMINAL' : 'CLASSIC'} →`}
+              </span>
+            </div>
+          )}
 
           {/* mobile joystick */}
           {isTouch.current && (
