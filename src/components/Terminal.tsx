@@ -285,13 +285,13 @@ const Terminal: React.FC = () => {
             {language.toUpperCase()}
           </span>
           <Link
-            to="/classic"
+            to="/"
             className="mode-switch-btn"
             onClick={(e) => e.stopPropagation()}
-            title={language === 'tr' ? 'Klasik Moda Geç' : 'Switch to Classic Mode'}
+            title={language === 'tr' ? 'Mod Değiştir' : 'Change Mode'}
           >
             <span className="mode-switch-icon">⊞</span>
-            {language === 'tr' ? 'Klasik' : 'Classic'}
+            {language === 'tr' ? 'Mod Değiştir' : 'Change Mode'}
           </Link>
         </div>
       </div>

@@ -550,6 +550,22 @@ function ClassicContent({ data }: { data: PortfolioData }) {
             </a>
           </li>
         ))}
+        <li className="cs-nav-m-divider" aria-hidden="true" />
+        <li>
+          <Link to="/blog" className="cs-nav-link cs-nav-link-accent" onClick={() => setMenuOpen(false)}>
+            {t('Blog', 'Blog')}
+          </Link>
+        </li>
+        <li>
+          <Link to="/terminal" className="cs-nav-link cs-nav-link-accent" onClick={() => setMenuOpen(false)}>
+            {t('Terminal', 'Terminal')}
+          </Link>
+        </li>
+        <li>
+          <Link to="/" className="cs-nav-link cs-nav-link-accent" onClick={() => setMenuOpen(false)}>
+            {t('Change Mode', 'Mod Değiştir')}
+          </Link>
+        </li>
       </ul>
 
       {/* ── HERO ── */}

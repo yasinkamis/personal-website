@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 .classic-site {
   --bg: #02050b;
@@ -10,13 +10,14 @@
   --purple: #d2a8ff;
   --orange: #ffa657;
   --pink: #ff7ab6;
-  --display: 'Space Grotesk', 'JetBrains Mono', sans-serif;
+  --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --display: 'Sora', 'Inter', system-ui, sans-serif;
   --mono: 'JetBrains Mono', 'Consolas', monospace;
 
   position: relative;
   background: var(--bg);
   color: var(--ink);
-  font-family: var(--display);
+  font-family: var(--sans);
   overflow-x: clip;
   min-height: 100vh;
 }
@@ -77,7 +78,7 @@ html.lenis, html.lenis body { height: auto; }
 /* ───────── SPLIT TEXT ───────── */
 .cs-split { display: inline; }
 .cs-word { display: inline-block; white-space: nowrap; }
-.cs-ch-wrap { display: inline-block; overflow: hidden; vertical-align: top; padding: 0.08em 0.03em 0.28em; margin: -0.08em -0.03em -0.28em; }
+.cs-ch-wrap { display: inline-block; overflow: hidden; vertical-align: top; padding: 0.1em 0.04em 0.4em; margin: -0.1em -0.04em -0.4em; }
 .cs-ch { display: inline-block; }
 
 /* ───────── NAV ───────── */
@@ -374,14 +375,15 @@ html.lenis, html.lenis body { height: auto; }
 @media (max-width: 900px) {
   .cs-section { padding: 6rem 0; }
   .cs-about-grid, .cs-skills-grid { grid-template-columns: 1fr; }
-  /* top-align on mobile so content flows instead of centre-overflowing */
-  .cs-hero { min-height: 100svh; align-items: flex-start; }
-  .cs-hero-content { padding: 7rem 1.25rem 3rem; }
-  .cs-hero-greeting { margin-bottom: 1rem; }
-  .cs-hero-name { margin-bottom: 1.4rem; line-height: 1.05; }
-  .cs-hero-title-row { margin-bottom: 1.4rem; }
-  .cs-hero-bio { font-size: 1rem; margin-bottom: 2.1rem; }
-  .cs-hero-ctas { gap: 0.8rem; margin-bottom: 2.2rem; }
+  /* mobile: natural height, roomy rhythm, no 3D crowding */
+  .cs-hero { min-height: auto; align-items: flex-start; }
+  .cs-hero-content { padding: 6.5rem 1.4rem 4rem; }
+  .cs-hero-greeting { margin-bottom: 1.2rem; font-size: 0.82rem; }
+  .cs-hero-name { margin-bottom: 1.4rem; line-height: 1.07; }
+  .cs-hero-title-row { margin-bottom: 1.6rem; }
+  .cs-hero-bio { font-size: 1.02rem; line-height: 1.7; margin-bottom: 2.4rem; max-width: 100%; }
+  .cs-hero-ctas { gap: 0.9rem; margin-bottom: 2.6rem; }
+  .cs-hero-ctas .cs-btn { flex: 1 1 auto; justify-content: center; }
   .cs-hero-stat-val { font-size: 2.1rem; }
   .cs-bignum { top: 3rem; }
   /* experience becomes a normal vertical stack */
@@ -394,11 +396,25 @@ html.lenis, html.lenis body { height: auto; }
   .cs-hero-scroll { display: none; }
 }
 @media (max-width: 520px) {
-  .cs-hero-name { font-size: clamp(2.5rem, 12vw, 4rem); line-height: 1.02; }
-  .cs-hero-stats { gap: 1.3rem; }
+  .cs-hero-name { font-size: clamp(2.1rem, 9.5vw, 3.2rem); line-height: 1.08; }
+  .cs-hero-stats { gap: 1.5rem; }
   .cs-about-cards { grid-template-columns: 1fr 1fr; }
   .cs-exp-header { flex-direction: column; padding-right: 3rem; }
   .cs-exp-card .cs-exp-meta-right { text-align: left; }
+}
+
+/* mobile: drop the heavy/fragile 3D background for a clean gradient */
+@media (max-width: 768px) {
+  .cs-canvas { display: none !important; }
+  .classic-site {
+    background:
+      radial-gradient(900px 520px at 85% -8%, rgba(124, 156, 255, 0.14), transparent 60%),
+      radial-gradient(760px 480px at -5% 102%, rgba(94, 234, 212, 0.10), transparent 55%),
+      #02050b;
+  }
+}
+@media (pointer: coarse) {
+  .cs-cursor-ring, .cs-cursor-dot { display: none !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   .cs-hero-scroll-dot, .cs-contact-email { animation: none; }
@@ -422,3 +438,24 @@ html.lenis, html.lenis body { height: auto; }
 .cs-marquee-item i .ic { width: 1em; height: 1em; }
 .cs-response-time .ic { color: var(--orange); }
 .cs-btn-arrow .ic, .cs-stack-tile-arrow .ic { margin: 0; width: 1.1em; height: 1.1em; vertical-align: middle; }
+
+/* mobile menu: extra actions (Blog / Terminal / Change Mode) */
+.cs-nav-m-divider { width: 120px; height: 1px; background: var(--line); margin: 0.6rem 0; }
+.cs-nav-links-mobile .cs-nav-link-accent {
+  color: var(--blue);
+  font-family: var(--mono);
+  font-size: 1.4rem !important;
+  font-weight: 600;
+}
+
+/* display font (Sora) for headings; body stays Inter */
+.cs-hero-name,
+.cs-section-title,
+.cs-stack-name,
+.cs-stack-tile-name,
+.cs-hero-stat-val,
+.cs-stat-card-val,
+.cs-bignum,
+.cs-footer-giant,
+.cs-exp-index,
+.cs-testimonial-text { font-family: var(--display); }
