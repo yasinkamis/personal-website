@@ -1,320 +1,380 @@
 import * as THREE from 'three';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 export type GateMood = 'idle' | 'terminal' | 'classic';
 export type GateKey = 'terminal' | 'classic';
+export type Lang = 'en' | 'tr';
 
 interface GateOpts {
+  lang?: Lang;
   onHover?: (k: GateKey | null) => void;
   onSelect?: (k: GateKey) => void;
 }
 
-const MOODS: Record<GateMood, [string, string]> = {
-  idle: ['#58a6ff', '#d2a8ff'],
-  terminal: ['#7ee787', '#2ea043'],
-  classic: ['#79c0ff', '#ff7ab6'],
+const GATE_DEF: Record<GateKey, { title: string; sub: Record<Lang, string>; color: number; x: number }> = {
+  terminal: { title: 'TERMINAL', sub: { en: 'power user', tr: 'uzman kullanıcı' }, color: 0x7ee787, x: -3.2 },
+  classic: { title: 'CLASSIC', sub: { en: 'visual tour', tr: 'görsel tur' }, color: 0x79c0ff, x: 3.2 },
 };
 
-const PORTAL_DEF: Record<GateKey, { title: string; sub: string; color: string }> = {
-  terminal: { title: 'TERMINAL', sub: '$_  power user', color: '#7ee787' },
-  classic: { title: 'CLASSIC', sub: '◆  visual tour', color: '#79c0ff' },
-};
+const GATE_Z = -9;
 
-/** Draw a portal label onto a canvas and return it as a texture. */
-function makeLabelTexture(title: string, sub: string, color: string): THREE.CanvasTexture {
-  const w = 512;
-  const h = 256;
+function makeLabelTexture(title: string, sub: string, colorHex: string): THREE.CanvasTexture {
+  const w = 512, h = 192;
   const cv = document.createElement('canvas');
-  cv.width = w;
-  cv.height = h;
+  cv.width = w; cv.height = h;
   const ctx = cv.getContext('2d')!;
   ctx.clearRect(0, 0, w, h);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillStyle = color;
-  ctx.shadowColor = color;
-  ctx.shadowBlur = 26;
-  ctx.font = '800 78px Inter, "Segoe UI", system-ui, sans-serif';
-  ctx.fillText(title, w / 2, h / 2 - 22);
+  ctx.fillStyle = colorHex;
+  ctx.shadowColor = colorHex;
+  ctx.shadowBlur = 24;
+  ctx.font = '800 72px Inter, "Segoe UI", system-ui, sans-serif';
+  ctx.fillText(title, w / 2, h / 2 - 16);
   ctx.shadowBlur = 0;
-  ctx.fillStyle = 'rgba(230,236,245,0.78)';
-  ctx.font = '500 30px "JetBrains Mono", monospace';
-  ctx.fillText(sub, w / 2, h / 2 + 54);
+  ctx.fillStyle = 'rgba(235,240,248,0.82)';
+  ctx.font = '500 28px "JetBrains Mono", monospace';
+  ctx.fillText(sub, w / 2, h / 2 + 46);
   const tex = new THREE.CanvasTexture(cv);
   tex.anisotropy = 4;
+  tex.colorSpace = THREE.SRGBColorSpace;
   return tex;
 }
 
 export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) {
-  const isMobile = window.innerWidth < 800;
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 1.9));
+  let lang: Lang = opts.lang ?? 'en';
+  const isMobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 800;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !isMobile });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.4 : 1.9));
   renderer.setSize(window.innerWidth, window.innerHeight, false);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  renderer.setClearColor(0x03060d, 1);
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x02050b, isMobile ? 0.05 : 0.042);
+  scene.fog = new THREE.FogExp2(0x03060d, 0.035);
 
-  const camera = new THREE.PerspectiveCamera(isMobile ? 74 : 66, window.innerWidth / window.innerHeight, 0.1, 200);
-  camera.position.set(0, 0.4, 8);
+  const camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.1, 200);
+  camera.rotation.order = 'YXZ';
+  camera.position.set(0, 1.6, 5);
 
-  const colorA = new THREE.Color(MOODS.idle[0]);
-  const colorB = new THREE.Color(MOODS.idle[1]);
-  const tA = new THREE.Color();
+  // environment reflections (procedural, no downloads)
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const envRT = pmrem.fromScene(new RoomEnvironment(), 0.04);
+  scene.environment = envRT.texture;
 
   const disposables: Array<{ dispose(): void }> = [];
   const track = <T extends { dispose(): void }>(o: T): T => { disposables.push(o); return o; };
 
-  /* ── floor + ceiling grid (the "hall") ── */
-  const gridColor = new THREE.Color('#2a3a66');
-  const floor = new THREE.GridHelper(80, 80, gridColor, gridColor);
-  (floor.material as THREE.Material & { transparent: boolean; opacity: number }).transparent = true;
-  (floor.material as THREE.Material & { opacity: number }).opacity = 0.22;
-  floor.position.y = -2.4;
+  // lights
+  scene.add(new THREE.HemisphereLight(0x8fb8ff, 0x0a0f1c, 0.5));
+  const key = new THREE.DirectionalLight(0xbcd4ff, 0.4);
+  key.position.set(3, 8, 6);
+  scene.add(key);
+
+  // reflective floor
+  const floorMat = track(new THREE.MeshStandardMaterial({
+    color: 0x05080f, metalness: 0.9, roughness: 0.35, envMapIntensity: 0.55,
+  }));
+  const floor = new THREE.Mesh(track(new THREE.PlaneGeometry(140, 140)), floorMat);
+  floor.rotation.x = -Math.PI / 2;
   scene.add(floor);
-  disposables.push(floor.geometry, floor.material as THREE.Material);
 
-  const ceiling = new THREE.GridHelper(80, 80, gridColor, gridColor);
-  (ceiling.material as THREE.Material & { transparent: boolean; opacity: number }).transparent = true;
-  (ceiling.material as THREE.Material & { opacity: number }).opacity = 0.12;
-  ceiling.position.y = 5.5;
-  scene.add(ceiling);
-  disposables.push(ceiling.geometry, ceiling.material as THREE.Material);
+  const grid = new THREE.GridHelper(140, 140, 0x24375f, 0x18263f);
+  (grid.material as THREE.Material & { transparent: boolean; opacity: number }).transparent = true;
+  (grid.material as THREE.Material & { opacity: number }).opacity = 0.35;
+  grid.position.y = 0.02;
+  scene.add(grid);
+  disposables.push(grid.geometry, grid.material as THREE.Material);
 
-  /* ── ambient particles ── */
-  const pN = isMobile ? 220 : 520;
+  // ambient particles
+  const pN = isMobile ? 240 : 560;
   const pPos = new Float32Array(pN * 3);
   for (let i = 0; i < pN; i++) {
-    pPos[i * 3] = (Math.random() - 0.5) * 50;
-    pPos[i * 3 + 1] = (Math.random() - 0.5) * 16;
-    pPos[i * 3 + 2] = -Math.random() * 60 + 6;
+    pPos[i * 3] = (Math.random() - 0.5) * 70;
+    pPos[i * 3 + 1] = Math.random() * 14;
+    pPos[i * 3 + 2] = -Math.random() * 60 + 10;
   }
   const pGeo = track(new THREE.BufferGeometry());
   pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
   const pMat = track(new THREE.PointsMaterial({
-    color: 0x9fc0ff, size: isMobile ? 0.05 : 0.04, transparent: true, opacity: 0.6,
-    blending: THREE.AdditiveBlending, depthWrite: false,
+    color: 0x9fc0ff, size: 0.05, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false,
   }));
   const particles = new THREE.Points(pGeo, pMat);
   scene.add(particles);
 
-  /* ── selectable portals ── */
-  type Portal = {
+  // side pillars for a "hall" feel
+  const pillarMat = track(new THREE.MeshStandardMaterial({ color: 0x0a1120, metalness: 0.7, roughness: 0.4, envMapIntensity: 0.5 }));
+  const pillarGeo = track(new THREE.BoxGeometry(0.5, 7, 0.5));
+  for (let i = 0; i < 7; i++) {
+    const z = 4 - i * 4;
+    for (const sx of [-7, 7]) {
+      const pil = new THREE.Mesh(pillarGeo, pillarMat);
+      pil.position.set(sx, 3.5, z);
+      scene.add(pil);
+    }
+  }
+
+  // ── gates ──
+  type Gate = {
     key: GateKey;
     group: THREE.Group;
-    ring: THREE.Mesh;
-    ring2: THREE.Mesh;
-    discMat: THREE.Material & { opacity: number };
-    glowDiscMat: THREE.Material & { opacity: number };
-    beamMat: THREE.Material & { opacity: number };
-    glowMat: THREE.Material & { opacity: number };
-    labelMat: THREE.Material & { opacity: number };
-    hit: THREE.Mesh;
-    color: THREE.Color;
-    hoverT: number;
+    frameMat: THREE.MeshStandardMaterial;
+    portalMat: THREE.MeshStandardMaterial;
+    light: THREE.PointLight;
+    label: THREE.Mesh;
+    labelMat: THREE.MeshBasicMaterial;
+    pos: THREE.Vector3;
+    activeT: number;
   };
-  const portals: Portal[] = [];
-  const px = isMobile ? 2.5 : 3.6;
+  const gates: Gate[] = [];
 
-  (Object.keys(PORTAL_DEF) as GateKey[]).forEach((key, idx) => {
-    const def = PORTAL_DEF[key];
+  (Object.keys(GATE_DEF) as GateKey[]).forEach(k => {
+    const def = GATE_DEF[k];
     const color = new THREE.Color(def.color);
     const group = new THREE.Group();
-    group.position.set(idx === 0 ? -px : px, 0, -2);
+    group.position.set(def.x, 0, GATE_Z);
+    group.userData.gateKey = k;
 
-    // floor reflection glow
-    const floorGlowGeo = track(new THREE.CircleGeometry(2.4, 40));
-    const floorGlowMat = track(new THREE.MeshBasicMaterial({
-      color, transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending, depthWrite: false,
-    })) as THREE.MeshBasicMaterial;
-    const floorGlow = new THREE.Mesh(floorGlowGeo, floorGlowMat);
-    floorGlow.rotation.x = -Math.PI / 2;
-    floorGlow.position.y = -2.38;
-    group.add(floorGlow);
+    const frameMat = track(new THREE.MeshStandardMaterial({
+      color: 0x0b1424, emissive: color, emissiveIntensity: 0.9, metalness: 0.5, roughness: 0.25, envMapIntensity: 0.6,
+    }));
+    const pillarG = track(new THREE.CylinderGeometry(0.16, 0.16, 4.3, 18));
+    for (const sx of [-1.25, 1.25]) {
+      const p = new THREE.Mesh(pillarG, frameMat);
+      p.position.set(sx, 2.15, 0);
+      group.add(p);
+    }
+    const topG = track(new THREE.BoxGeometry(2.9, 0.34, 0.42));
+    const top = new THREE.Mesh(topG, frameMat);
+    top.position.set(0, 4.15, 0);
+    group.add(top);
 
-    // vertical light beam
-    const beamGeo = track(new THREE.CylinderGeometry(0.06, 0.4, 8, 16, 1, true));
-    const beamMat = track(new THREE.MeshBasicMaterial({
-      color, transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false,
-    })) as THREE.MeshBasicMaterial;
-    const beam = new THREE.Mesh(beamGeo, beamMat);
-    beam.position.y = -0.4;
-    group.add(beam);
+    // pedestal
+    const pedMat = track(new THREE.MeshStandardMaterial({ color: 0x0a0f1b, metalness: 0.85, roughness: 0.2, envMapIntensity: 0.7 }));
+    const ped = new THREE.Mesh(track(new THREE.CylinderGeometry(1.8, 2.1, 0.4, 36)), pedMat);
+    ped.position.y = 0.2;
+    group.add(ped);
 
-    // outer glow disc
-    const glowGeo = track(new THREE.CircleGeometry(2.2, 48));
-    const glowMat = track(new THREE.MeshBasicMaterial({
-      color, transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending, depthWrite: false,
-    })) as THREE.MeshBasicMaterial;
-    const glow = new THREE.Mesh(glowGeo, glowMat);
-    glow.position.z = -0.05;
-    group.add(glow);
+    // portal surface (emissive, pulses, glows with bloom)
+    const portalMat = track(new THREE.MeshStandardMaterial({
+      color: 0x000000, emissive: color, emissiveIntensity: 1.3, transparent: true, opacity: 0.6, side: THREE.DoubleSide,
+    }));
+    const portal = new THREE.Mesh(track(new THREE.PlaneGeometry(2.3, 3.85)), portalMat);
+    portal.position.set(0, 2.15, 0);
+    group.add(portal);
 
-    // two rings
-    const ringGeo = track(new THREE.TorusGeometry(1.65, 0.05, 12, 110));
-    const ringMat = track(new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.0 })) as THREE.MeshBasicMaterial;
-    const ring = new THREE.Mesh(ringGeo, ringMat);
-    group.add(ring);
-
-    const ring2Geo = track(new THREE.TorusGeometry(1.9, 0.015, 8, 110));
-    const ring2Mat = track(new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.0 })) as THREE.MeshBasicMaterial;
-    const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
-    group.add(ring2);
-
-    // inner disc
-    const discGeo = track(new THREE.CircleGeometry(1.6, 48));
-    const discMat = track(new THREE.MeshBasicMaterial({
-      color, transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending, depthWrite: false,
-    })) as THREE.MeshBasicMaterial;
-    const disc = new THREE.Mesh(discGeo, discMat);
-    disc.position.z = -0.03;
-    group.add(disc);
-
-    // label
-    const labelTex = track(makeLabelTexture(def.title, def.sub, def.color));
-    const labelGeo = track(new THREE.PlaneGeometry(2.7, 1.35));
-    const labelMat = track(new THREE.MeshBasicMaterial({ map: labelTex, transparent: true, opacity: 0.0, depthWrite: false })) as THREE.MeshBasicMaterial;
-    const label = new THREE.Mesh(labelGeo, labelMat);
-    label.position.z = 0.03;
+    // floating label
+    const labelMat = track(new THREE.MeshBasicMaterial({
+      map: makeLabelTexture(def.title, def.sub[lang], '#' + color.getHexString()),
+      transparent: true, depthWrite: false, toneMapped: false,
+    }));
+    const label = new THREE.Mesh(track(new THREE.PlaneGeometry(3, 1.12)), labelMat);
+    label.position.set(0, 5.15, 0);
     group.add(label);
 
-    // hit area
-    const hitGeo = track(new THREE.CircleGeometry(2.0, 24));
-    const hitMat = track(new THREE.MeshBasicMaterial({ visible: false }));
-    const hit = new THREE.Mesh(hitGeo, hitMat);
-    hit.userData.key = key;
-    group.add(hit);
+    // glow light
+    const light = new THREE.PointLight(color, 5, 16, 2);
+    light.position.set(0, 2.4, 0.6);
+    group.add(light);
 
-    group.scale.setScalar(0.0001);
     scene.add(group);
-    portals.push({ key, group, ring, ring2, discMat, glowDiscMat: glowMat, beamMat, glowMat: floorGlowMat, labelMat, hit, color, hoverT: 0 });
+    gates.push({ key: k, group, frameMat, portalMat, light, label, labelMat, pos: new THREE.Vector3(def.x, 1.6, GATE_Z), activeT: 0 });
   });
 
-  const st = { mx: 0, my: 0, ready: 0, targetReady: 0, warp: 0, targetWarp: 0, auto: 0 };
-  let mood: GateMood = 'idle';
-  let hovered: GateKey | null = null;
-  let pointerActive = false;
+  // ── postprocessing (bloom) ──
+  const composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+  const bloom = new UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    isMobile ? 0.7 : 0.95, 0.55, 0.55,
+  );
+  composer.addPass(bloom);
+  composer.setSize(window.innerWidth, window.innerHeight);
+
+  // ── input / controls ──
+  const keys = new Set<string>();
+  const move = { x: 0, y: 0 };       // external (joystick): x strafe, y forward
+  let yaw = 0, pitch = 0;
+  let ready = 0, targetReady = 0;
+  let warp = 0, targetWarp = 0;
+  let forcedActive: GateKey | null = null;
+  let activeKey: GateKey | null = null;
+
   const clock = new THREE.Clock();
   let raf = 0;
-
   const raycaster = new THREE.Raycaster();
-  const ndc = new THREE.Vector2();
+  const tapNDC = new THREE.Vector2();
 
-  const updateHover = () => {
-    if (st.ready < 0.5) return;
-    raycaster.setFromCamera(ndc, camera);
-    const hits = raycaster.intersectObjects(portals.map(p => p.hit), false);
-    const key = (hits[0]?.object.userData.key as GateKey | undefined) ?? null;
-    if (key !== hovered) {
-      hovered = key;
-      mood = key ?? 'idle';
-      opts.onHover?.(key);
-      canvas.style.cursor = key ? 'pointer' : 'grab';
+  // drag-look
+  let dragging = false, lastX = 0, lastY = 0, downT = 0, moved = 0;
+  const LOOK = 0.0026;
+
+  const setActive = (k: GateKey | null) => {
+    if (k === activeKey) return;
+    activeKey = k;
+    opts.onHover?.(k);
+  };
+
+  const trySelect = (fromTap: boolean, ndc?: THREE.Vector2) => {
+    if (ready < 0.5 || warp > 0.01) return;
+    let hit: GateKey | null = null;
+    if (fromTap && ndc) {
+      raycaster.setFromCamera(ndc, camera);
+      const inter = raycaster.intersectObjects(gates.map(g => g.group), true);
+      let o: THREE.Object3D | null = inter[0]?.object ?? null;
+      while (o && o.userData.gateKey == null) o = o.parent;
+      hit = (o?.userData.gateKey as GateKey | undefined) ?? null;
+    }
+    const chosen = hit ?? activeKey;
+    if (chosen) opts.onSelect?.(chosen);
+  };
+
+  const onDown = (e: PointerEvent) => {
+    dragging = true; moved = 0;
+    lastX = e.clientX; lastY = e.clientY; downT = performance.now();
+  };
+  const onMove = (e: PointerEvent) => {
+    if (!dragging) return;
+    const dx = e.clientX - lastX, dy = e.clientY - lastY;
+    lastX = e.clientX; lastY = e.clientY;
+    moved += Math.abs(dx) + Math.abs(dy);
+    yaw -= dx * LOOK;
+    pitch = Math.max(-1.0, Math.min(1.0, pitch - dy * LOOK));
+  };
+  const onUp = (e: PointerEvent) => {
+    const wasTap = moved < 10 && performance.now() - downT < 320;
+    dragging = false;
+    if (wasTap) {
+      tapNDC.x = (e.clientX / window.innerWidth) * 2 - 1;
+      tapNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      trySelect(true, tapNDC);
     }
   };
+  const onKeyDown = (e: KeyboardEvent) => {
+    keys.add(e.key.toLowerCase());
+    if (e.key.toLowerCase() === 'e' || e.key === 'Enter') trySelect(false);
+  };
+  const onKeyUp = (e: KeyboardEvent) => keys.delete(e.key.toLowerCase());
+
+  canvas.addEventListener('pointerdown', onDown);
+  window.addEventListener('pointermove', onMove, { passive: true });
+  window.addEventListener('pointerup', onUp);
+  window.addEventListener('keydown', onKeyDown);
+  window.addEventListener('keyup', onKeyUp);
+  canvas.style.cursor = 'grab';
+
+  const forward = new THREE.Vector3();
+  const right = new THREE.Vector3();
+  const vel = new THREE.Vector3();
 
   const frame = () => {
     raf = requestAnimationFrame(frame);
     const dt = Math.min(clock.getDelta(), 0.05);
     const t = clock.elapsedTime;
 
-    st.ready += (st.targetReady - st.ready) * 0.06;
-    st.warp += (st.targetWarp - st.warp) * 0.06;
+    ready += (targetReady - ready) * 0.05;
+    warp += (targetWarp - warp) * 0.06;
 
-    tA.set(MOODS[mood][0]);
-    colorA.lerp(tA, 0.06);
-    tA.set(MOODS[mood][1]);
-    colorB.lerp(tA, 0.06);
+    // movement input
+    let fwd = move.y;
+    let str = move.x;
+    if (keys.has('w') || keys.has('arrowup')) fwd += 1;
+    if (keys.has('s') || keys.has('arrowdown')) fwd -= 1;
+    if (keys.has('d') || keys.has('arrowright')) str += 1;
+    if (keys.has('a') || keys.has('arrowleft')) str -= 1;
 
-    // idle auto-sway when the user isn't steering
-    if (!pointerActive) st.auto += dt * 0.25;
-    const ax = pointerActive ? st.mx : Math.sin(st.auto) * 0.35;
-    const ay = pointerActive ? st.my : Math.sin(st.auto * 0.7) * 0.12;
+    forward.set(-Math.sin(yaw), 0, -Math.cos(yaw));
+    right.set(Math.cos(yaw), 0, -Math.sin(yaw));
+    vel.set(0, 0, 0).addScaledVector(forward, fwd).addScaledVector(right, str);
+    if (vel.lengthSq() > 1) vel.normalize();
+    const speed = 6 * (1 - warp);
+    camera.position.addScaledVector(vel, speed * dt);
+    camera.position.x = Math.max(-15, Math.min(15, camera.position.x));
+    camera.position.z = Math.max(-13, Math.min(12, camera.position.z));
+    camera.position.y = 1.6 + Math.sin(t * 8) * (vel.lengthSq() > 0.01 ? 0.03 : 0); // head bob
 
-    // particles drift
-    particles.rotation.y += dt * 0.01;
-    particles.position.z = (particles.position.z + dt * (0.6 + st.warp * 8)) % 12;
+    // nearest gate (proximity) unless a button forces it
+    let nearest: GateKey | null = null;
+    let nd = Infinity;
+    gates.forEach(g => {
+      const dxz = Math.hypot(camera.position.x - g.pos.x, camera.position.z - g.pos.z);
+      if (dxz < 4.2 && dxz < nd) { nd = dxz; nearest = g.key; }
+    });
+    setActive(forcedActive ?? nearest);
 
-    portals.forEach((p, i) => {
-      const isHover = hovered === p.key;
-      p.hoverT += ((isHover ? 1 : 0) - p.hoverT) * 0.12;
-      const vis = st.ready * (1 - st.warp);
-      const bob = Math.sin(t * 1.0 + i * 1.7) * 0.1;
-      p.group.scale.setScalar(Math.max(0.0001, vis * (1 + p.hoverT * 0.12)));
-      p.group.position.y = bob + p.hoverT * 0.12;
-      p.group.position.z = -2 + p.hoverT * 0.7 - st.warp * 10;
-      p.ring.rotation.z += dt * (0.25 + p.hoverT * 0.9) * (i ? -1 : 1);
-      p.ring2.rotation.z -= dt * (0.15 + p.hoverT * 0.6) * (i ? -1 : 1);
-      (p.ring.material as THREE.Material & { opacity: number }).opacity = vis * (0.6 + p.hoverT * 0.4);
-      (p.ring2.material as THREE.Material & { opacity: number }).opacity = vis * (0.3 + p.hoverT * 0.5);
-      p.labelMat.opacity = vis;
-      p.glowMat.opacity = vis * (0.1 + p.hoverT * 0.3);
-      p.beamMat.opacity = vis * (0.06 + p.hoverT * 0.22);
-      p.discMat.opacity = vis * (0.05 + p.hoverT * 0.14);
-      p.glowDiscMat.opacity = vis * (0.05 + p.hoverT * 0.18);
+    // animate gates
+    gates.forEach((g, i) => {
+      const isActive = activeKey === g.key;
+      g.activeT += ((isActive ? 1 : 0) - g.activeT) * 0.1;
+      g.frameMat.emissiveIntensity = 0.8 + g.activeT * 1.4 + Math.sin(t * 2 + i) * 0.05;
+      g.portalMat.emissiveIntensity = 1.1 + g.activeT * 1.6;
+      g.portalMat.opacity = 0.5 + Math.sin(t * 1.5 + i) * 0.08 + g.activeT * 0.2;
+      g.light.intensity = 4 + g.activeT * 8;
+      g.label.lookAt(camera.position.x, g.label.getWorldPosition(new THREE.Vector3()).y, camera.position.z);
+      const vis = ready;
+      g.labelMat.opacity = vis;
+      g.group.scale.setScalar(Math.max(0.0001, vis));
     });
 
-    // camera orbit (look around the hall)
-    const yaw = ax * 0.4;
-    const pitch = ay * 0.22;
-    const rad = isMobile ? 8.4 : 8;
-    const tx = Math.sin(yaw) * rad;
-    const tz = Math.cos(yaw) * rad - st.warp * 9;
-    camera.position.x += (tx - camera.position.x) * 0.06;
-    camera.position.z += (tz - camera.position.z) * 0.06;
-    camera.position.y += (0.4 + pitch * 2.2 - camera.position.y) * 0.06;
-    camera.lookAt(0, 0, -2);
-    camera.fov = (isMobile ? 74 : 66) + st.warp * 40;
-    camera.updateProjectionMatrix();
+    // particles drift
+    particles.rotation.y += dt * 0.008;
 
-    // fade the hall out during warp
-    const hallOp = 1 - st.warp;
-    (floor.material as THREE.Material & { opacity: number }).opacity = 0.22 * hallOp;
-    (ceiling.material as THREE.Material & { opacity: number }).opacity = 0.12 * hallOp;
+    // warp: dolly toward active gate + crank bloom
+    if (warp > 0.01 && activeKey) {
+      const g = gates.find(x => x.key === activeKey)!;
+      camera.position.x += (g.pos.x - camera.position.x) * 0.04 * warp * 4;
+      camera.position.z += (g.pos.z + 1 - camera.position.z) * 0.04 * warp * 4;
+    }
+    bloom.strength = (isMobile ? 0.7 : 0.95) + warp * 2.2;
+    renderer.toneMappingExposure = 1.05 + warp * 1.2;
 
-    updateHover();
-    renderer.render(scene, camera);
+    camera.rotation.set(pitch, yaw, 0);
+    composer.render();
   };
   frame();
 
   const onResize = () => {
     renderer.setSize(window.innerWidth, window.innerHeight, false);
+    composer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
   };
-  const onMove = (e: PointerEvent) => {
-    pointerActive = true;
-    st.mx = (e.clientX / window.innerWidth - 0.5) * 2;
-    st.my = -(e.clientY / window.innerHeight - 0.5) * 2;
-    ndc.x = (e.clientX / window.innerWidth) * 2 - 1;
-    ndc.y = -(e.clientY / window.innerHeight) * 2 + 1;
-  };
-  const onLeave = () => { pointerActive = false; };
-  const onClick = () => { if (hovered) opts.onSelect?.(hovered); };
   window.addEventListener('resize', onResize);
-  window.addEventListener('pointermove', onMove, { passive: true });
-  window.addEventListener('pointerleave', onLeave);
-  canvas.addEventListener('click', onClick);
-  canvas.style.cursor = 'grab';
 
   return {
-    setMood(m: GateMood) { mood = m; },
-    setReady(v: boolean) { st.targetReady = v ? 1 : 0; },
-    hoverPortal(k: GateKey | null) {
-      hovered = k;
-      mood = k ?? 'idle';
-      opts.onHover?.(k);
+    setReady(v: boolean) { targetReady = v ? 1 : 0; },
+    setMoveVector(x: number, y: number) { move.x = x; move.y = y; },
+    hoverPortal(k: GateKey | null) { forcedActive = k; },
+    setLang(l: Lang) {
+      lang = l;
+      gates.forEach(g => {
+        const def = GATE_DEF[g.key];
+        const old = g.labelMat.map;
+        g.labelMat.map = makeLabelTexture(def.title, def.sub[lang], '#' + new THREE.Color(def.color).getHexString());
+        g.labelMat.needsUpdate = true;
+        old?.dispose();
+      });
     },
-    warp() { st.targetWarp = 1; st.targetReady = 0; },
+    warp() { targetWarp = 1; targetReady = 0; },
     dispose() {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', onResize);
+      canvas.removeEventListener('pointerdown', onDown);
       window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerleave', onLeave);
-      canvas.removeEventListener('click', onClick);
-      scene.traverse(o => {
-        const m = o as THREE.Mesh;
-        m.geometry?.dispose?.();
-      });
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keyup', onKeyUp);
+      scene.traverse(o => { (o as THREE.Mesh).geometry?.dispose?.(); });
+      gates.forEach(g => g.labelMat.map?.dispose());
       disposables.forEach(d => d.dispose());
+      envRT.texture.dispose();
+      pmrem.dispose();
+      composer.dispose();
       renderer.dispose();
     },
   };
