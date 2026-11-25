@@ -374,12 +374,14 @@ html.lenis, html.lenis body { height: auto; }
 @media (max-width: 900px) {
   .cs-section { padding: 6rem 0; }
   .cs-about-grid, .cs-skills-grid { grid-template-columns: 1fr; }
-  .cs-hero { min-height: 100svh; }
-  .cs-hero-content { padding: 6rem 1.25rem 3rem; }
-  .cs-hero-name { margin-bottom: 1.1rem; }
-  .cs-hero-title-row { margin-bottom: 1.1rem; }
-  .cs-hero-bio { font-size: 1rem; margin-bottom: 1.8rem; }
-  .cs-hero-ctas { gap: 0.8rem; margin-bottom: 2rem; }
+  /* top-align on mobile so content flows instead of centre-overflowing */
+  .cs-hero { min-height: 100svh; align-items: flex-start; }
+  .cs-hero-content { padding: 7rem 1.25rem 3rem; }
+  .cs-hero-greeting { margin-bottom: 1rem; }
+  .cs-hero-name { margin-bottom: 1.4rem; line-height: 1.05; }
+  .cs-hero-title-row { margin-bottom: 1.4rem; }
+  .cs-hero-bio { font-size: 1rem; margin-bottom: 2.1rem; }
+  .cs-hero-ctas { gap: 0.8rem; margin-bottom: 2.2rem; }
   .cs-hero-stat-val { font-size: 2.1rem; }
   .cs-bignum { top: 3rem; }
   /* experience becomes a normal vertical stack */

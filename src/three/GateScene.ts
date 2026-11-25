@@ -340,12 +340,15 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
     if (chosen) opts.onSelect?.(chosen);
   };
 
+  let lookId: number | null = null;
   const onDown = (e: PointerEvent) => {
+    if (lookId !== null) return; // another finger already drives the look
+    lookId = e.pointerId;
     dragging = true; moved = 0;
     lastX = e.clientX; lastY = e.clientY; downT = performance.now();
   };
   const onMove = (e: PointerEvent) => {
-    if (dragging) {
+    if (dragging && e.pointerId === lookId) {
       const dx = e.clientX - lastX, dy = e.clientY - lastY;
       lastX = e.clientX; lastY = e.clientY;
       moved += Math.abs(dx) + Math.abs(dy);
@@ -353,6 +356,7 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
       pitch = Math.max(-1.0, Math.min(1.0, pitch - dy * LOOK));
       return;
     }
+    if (dragging) return; // ignore other fingers while looking
     // mouse-hover highlight on gates (desktop)
     hoverNDC.x = (e.clientX / window.innerWidth) * 2 - 1;
     hoverNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -364,8 +368,10 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
     canvas.style.cursor = hoverKey ? 'pointer' : 'grab';
   };
   const onUp = (e: PointerEvent) => {
+    if (e.pointerId !== lookId) return;
     const wasTap = moved < 10 && performance.now() - downT < 320;
     dragging = false;
+    lookId = null;
     if (wasTap) {
       tapNDC.x = (e.clientX / window.innerWidth) * 2 - 1;
       tapNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;

@@ -47,6 +47,7 @@ export default function GatePage() {
   const [showQuestion, setShowQuestion] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [active, setActive] = useState<GateKey | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef<GateSceneApi | null>(null);
@@ -158,6 +159,27 @@ export default function GatePage() {
       <button className="gate-lang-btn" onClick={toggleLang}>
         {lang === 'en' ? 'TR' : 'EN'}
       </button>
+
+      {/* Mobile: menu button (top-left) → selection modal */}
+      {showQuestion && (
+        <button className="gate-menu-btn" onClick={() => setMenuOpen(true)}>
+          ☰ {lang === 'tr' ? 'Seç' : 'Menu'}
+        </button>
+      )}
+      {menuOpen && (
+        <div className="gate-modal-backdrop" onClick={() => setMenuOpen(false)}>
+          <div className="gate-modal" onClick={e => e.stopPropagation()}>
+            <span className="gate-modal-label">{c.question}</span>
+            <button className="gate-modal-btn gate-modal-terminal" onClick={() => { setMenuOpen(false); handleChoice('/terminal'); }}>
+              <span>TERMINAL</span><small>{c.yesMode}</small>
+            </button>
+            <button className="gate-modal-btn gate-modal-classic" onClick={() => { setMenuOpen(false); handleChoice('/classic'); }}>
+              <span>CLASSIC</span><small>{c.noMode}</small>
+            </button>
+            <button className="gate-modal-close" onClick={() => setMenuOpen(false)}>✕</button>
+          </div>
+        </div>
+      )}
 
       {/* Boot window — fades out once the hall appears */}
       <div className={`gate-window ${showQuestion ? 'gate-window-dismiss' : ''}`}>
