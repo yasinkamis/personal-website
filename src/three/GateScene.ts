@@ -31,13 +31,39 @@ function makeLabelTexture(title: string, sub: string, colorHex: string): THREE.C
   ctx.textBaseline = 'middle';
   ctx.fillStyle = colorHex;
   ctx.shadowColor = colorHex;
-  ctx.shadowBlur = 24;
+  ctx.shadowBlur = 12;
   ctx.font = '800 72px Inter, "Segoe UI", system-ui, sans-serif';
   ctx.fillText(title, w / 2, h / 2 - 16);
   ctx.shadowBlur = 0;
   ctx.fillStyle = 'rgba(235,240,248,0.82)';
   ctx.font = '500 28px "JetBrains Mono", monospace';
   ctx.fillText(sub, w / 2, h / 2 + 46);
+  const tex = new THREE.CanvasTexture(cv);
+  tex.anisotropy = 4;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/** A dim "info board" mounted on the hall walls. */
+function makePanelTexture(label: string, sub: string): THREE.CanvasTexture {
+  const w = 512, h = 288;
+  const cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  const ctx = cv.getContext('2d')!;
+  ctx.fillStyle = 'rgba(8,14,26,0.92)';
+  ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = 'rgba(124,156,255,0.35)';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(10, 10, w - 20, h - 20);
+  ctx.fillStyle = 'rgba(94,234,212,0.9)';
+  ctx.font = '600 24px "JetBrains Mono", monospace';
+  ctx.fillText(sub, 34, 60);
+  ctx.fillStyle = '#e8eefb';
+  ctx.font = '800 74px Inter, "Segoe UI", system-ui, sans-serif';
+  ctx.fillText(label, 32, 168);
+  ctx.fillStyle = 'rgba(138,153,179,0.7)';
+  ctx.font = '500 22px "JetBrains Mono", monospace';
+  ctx.fillText('// yasinkamis.com', 34, 240);
   const tex = new THREE.CanvasTexture(cv);
   tex.anisotropy = 4;
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -52,7 +78,7 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.4 : 1.9));
   renderer.setSize(window.innerWidth, window.innerHeight, false);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 0.9;
   renderer.setClearColor(0x03060d, 1);
 
   const scene = new THREE.Scene();
@@ -71,14 +97,14 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
   const track = <T extends { dispose(): void }>(o: T): T => { disposables.push(o); return o; };
 
   // lights
-  scene.add(new THREE.HemisphereLight(0x8fb8ff, 0x0a0f1c, 0.5));
-  const key = new THREE.DirectionalLight(0xbcd4ff, 0.4);
+  scene.add(new THREE.HemisphereLight(0x8fb8ff, 0x0a0f1c, 0.38));
+  const key = new THREE.DirectionalLight(0xbcd4ff, 0.28);
   key.position.set(3, 8, 6);
   scene.add(key);
 
   // reflective floor
   const floorMat = track(new THREE.MeshStandardMaterial({
-    color: 0x05080f, metalness: 0.9, roughness: 0.35, envMapIntensity: 0.55,
+    color: 0x04060c, metalness: 0.55, roughness: 0.62, envMapIntensity: 0.2,
   }));
   const floor = new THREE.Mesh(track(new THREE.PlaneGeometry(140, 140)), floorMat);
   floor.rotation.x = -Math.PI / 2;
@@ -86,7 +112,7 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
 
   const grid = new THREE.GridHelper(140, 140, 0x24375f, 0x18263f);
   (grid.material as THREE.Material & { transparent: boolean; opacity: number }).transparent = true;
-  (grid.material as THREE.Material & { opacity: number }).opacity = 0.35;
+  (grid.material as THREE.Material & { opacity: number }).opacity = 0.22;
   grid.position.y = 0.02;
   scene.add(grid);
   disposables.push(grid.geometry, grid.material as THREE.Material);
@@ -108,8 +134,8 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
   scene.add(particles);
 
   // side pillars for a "hall" feel
-  const pillarMat = track(new THREE.MeshStandardMaterial({ color: 0x0a1120, metalness: 0.7, roughness: 0.4, envMapIntensity: 0.5 }));
-  const pillarGeo = track(new THREE.BoxGeometry(0.5, 7, 0.5));
+  const pillarMat = track(new THREE.MeshStandardMaterial({ color: 0x080d18, metalness: 0.2, roughness: 0.78, envMapIntensity: 0.15 }));
+  const pillarGeo = track(new THREE.BoxGeometry(0.42, 7, 0.42));
   for (let i = 0; i < 7; i++) {
     const z = 4 - i * 4;
     for (const sx of [-7, 7]) {
@@ -118,6 +144,39 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
       scene.add(pil);
     }
   }
+
+  // dim info boards mounted on the hall walls
+  const BOARDS: Array<[string, string]> = [
+    ['REACT', '// frontend'], ['NEXT.JS', '// framework'], ['THREE.JS', '// 3d'],
+    ['TYPESCRIPT', '// types'], ['GSAP', '// motion'], ['NODE.JS', '// backend'],
+  ];
+  const boardGeo = track(new THREE.PlaneGeometry(3.2, 1.8));
+  BOARDS.forEach((b, i) => {
+    const side = i < 3 ? -1 : 1;
+    const zPos = 2 - (i % 3) * 4.4;
+    const tex = track(makePanelTexture(b[0], b[1]));
+    const mat = track(new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0.85 }));
+    const board = new THREE.Mesh(boardGeo, mat);
+    board.position.set(side * 6.75, 3.0, zPos);
+    board.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2;
+    scene.add(board);
+  });
+
+  // slow floating wireframe shapes (ambiance)
+  const floaters: THREE.Mesh[] = [];
+  const floatMat = track(new THREE.MeshBasicMaterial({ color: 0x2b3f6b, wireframe: true, transparent: true, opacity: 0.45 }));
+  const floatGeos = [
+    track(new THREE.IcosahedronGeometry(0.8, 0)),
+    track(new THREE.OctahedronGeometry(0.7, 0)),
+    track(new THREE.TetrahedronGeometry(0.95, 0)),
+  ];
+  const floatPos: Array<[number, number, number]> = [[-5, 5.6, -5], [5.4, 6.1, -1], [0, 6.6, -12]];
+  floatGeos.forEach((g, i) => {
+    const m = new THREE.Mesh(g, floatMat);
+    m.position.set(...floatPos[i]);
+    scene.add(m);
+    floaters.push(m);
+  });
 
   // ── gates ──
   type Gate = {
@@ -141,7 +200,7 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
     group.userData.gateKey = k;
 
     const frameMat = track(new THREE.MeshStandardMaterial({
-      color: 0x0b1424, emissive: color, emissiveIntensity: 0.9, metalness: 0.5, roughness: 0.25, envMapIntensity: 0.6,
+      color: 0x0b1424, emissive: color, emissiveIntensity: 0.5, metalness: 0.5, roughness: 0.3, envMapIntensity: 0.4,
     }));
     const pillarG = track(new THREE.CylinderGeometry(0.16, 0.16, 4.3, 18));
     for (const sx of [-1.25, 1.25]) {
@@ -155,14 +214,14 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
     group.add(top);
 
     // pedestal
-    const pedMat = track(new THREE.MeshStandardMaterial({ color: 0x0a0f1b, metalness: 0.85, roughness: 0.2, envMapIntensity: 0.7 }));
+    const pedMat = track(new THREE.MeshStandardMaterial({ color: 0x090e1a, metalness: 0.4, roughness: 0.55, envMapIntensity: 0.22 }));
     const ped = new THREE.Mesh(track(new THREE.CylinderGeometry(1.8, 2.1, 0.4, 36)), pedMat);
     ped.position.y = 0.2;
     group.add(ped);
 
     // portal surface (emissive, pulses, glows with bloom)
     const portalMat = track(new THREE.MeshStandardMaterial({
-      color: 0x000000, emissive: color, emissiveIntensity: 1.3, transparent: true, opacity: 0.6, side: THREE.DoubleSide,
+      color: 0x000000, emissive: color, emissiveIntensity: 0.7, transparent: true, opacity: 0.38, side: THREE.DoubleSide,
     }));
     const portal = new THREE.Mesh(track(new THREE.PlaneGeometry(2.3, 3.85)), portalMat);
     portal.position.set(0, 2.15, 0);
@@ -178,7 +237,7 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
     group.add(label);
 
     // glow light
-    const light = new THREE.PointLight(color, 5, 16, 2);
+    const light = new THREE.PointLight(color, 3, 14, 2);
     light.position.set(0, 2.4, 0.6);
     group.add(light);
 
@@ -191,7 +250,7 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
   composer.addPass(new RenderPass(scene, camera));
   const bloom = new UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    isMobile ? 0.7 : 0.95, 0.55, 0.55,
+    isMobile ? 0.35 : 0.5, 0.5, 0.82,
   );
   composer.addPass(bloom);
   composer.setSize(window.innerWidth, window.innerHeight);
@@ -311,10 +370,10 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
     gates.forEach((g, i) => {
       const isActive = activeKey === g.key;
       g.activeT += ((isActive ? 1 : 0) - g.activeT) * 0.1;
-      g.frameMat.emissiveIntensity = 0.8 + g.activeT * 1.4 + Math.sin(t * 2 + i) * 0.05;
-      g.portalMat.emissiveIntensity = 1.1 + g.activeT * 1.6;
-      g.portalMat.opacity = 0.5 + Math.sin(t * 1.5 + i) * 0.08 + g.activeT * 0.2;
-      g.light.intensity = 4 + g.activeT * 8;
+      g.frameMat.emissiveIntensity = 0.45 + g.activeT * 0.8 + Math.sin(t * 2 + i) * 0.04;
+      g.portalMat.emissiveIntensity = 0.6 + g.activeT * 0.9;
+      g.portalMat.opacity = 0.34 + Math.sin(t * 1.5 + i) * 0.05 + g.activeT * 0.14;
+      g.light.intensity = 2.4 + g.activeT * 4.5;
       g.label.lookAt(camera.position.x, g.label.getWorldPosition(new THREE.Vector3()).y, camera.position.z);
       const vis = ready;
       g.labelMat.opacity = vis;
@@ -323,6 +382,7 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
 
     // particles drift
     particles.rotation.y += dt * 0.008;
+    floaters.forEach((f, i) => { f.rotation.x += dt * 0.1; f.rotation.y += dt * (0.12 + i * 0.03); });
 
     // warp: dolly toward active gate + crank bloom
     if (warp > 0.01 && activeKey) {
@@ -330,8 +390,8 @@ export function createGateScene(canvas: HTMLCanvasElement, opts: GateOpts = {}) 
       camera.position.x += (g.pos.x - camera.position.x) * 0.04 * warp * 4;
       camera.position.z += (g.pos.z + 1 - camera.position.z) * 0.04 * warp * 4;
     }
-    bloom.strength = (isMobile ? 0.7 : 0.95) + warp * 2.2;
-    renderer.toneMappingExposure = 1.05 + warp * 1.2;
+    bloom.strength = (isMobile ? 0.35 : 0.5) + warp * 1.7;
+    renderer.toneMappingExposure = 0.9 + warp * 0.9;
 
     camera.rotation.set(pitch, yaw, 0);
     composer.render();
